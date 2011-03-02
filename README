@@ -1,0 +1,17 @@
+NAME
+    OpenERP::OOM - OpenERP Object to Object Mapper
+
+SYNOPSIS
+    Maps OpenERP objects to standard Perl objects.
+
+    More documentation to follow... :-)
+
+AUTHOR
+    Jon Allen (JJ), "<jj at opusvl.com>"
+
+COPYRIGHT & LICENSE
+    Copyright (C) 2011 OpusVL
+
+    This software is licensed according to the "IP Assignment Schedule"
+    provided with the development project.
+
