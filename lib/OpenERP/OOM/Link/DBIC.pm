@@ -24,8 +24,6 @@ sub _build_dbic_schema {
 sub create {
     my ($self, $args, $data) = @_;
     
-    say "create called";
-    
     if (my $object = $self->dbic_schema->resultset($args->{class})->create($data)) {
         return $object->id;
     }
@@ -37,7 +35,7 @@ sub create {
 sub retrieve {
     my ($self, $args, $id) = @_;
     
-    say "retrieve called with class $class";
+    say "retrieve called with class ". $args->{class};
     
     if (my $object = $self->dbic_schema->resultset($args->{class})->find($id)) {
         return $object;
