@@ -35,8 +35,6 @@ sub create {
 sub retrieve {
     my ($self, $args, $id) = @_;
     
-    say "retrieve called with class ". $args->{class};
-    
     if (my $object = $self->dbic_schema->resultset($args->{class})->find($id)) {
         return $object;
     }
