@@ -1,6 +1,8 @@
 package OpenERP::OOM::Object::Base;
 
 use 5.010;
+use Carp;
+use Data::Dumper;
 use List::MoreUtils qw/uniq/;
 use Moose;
 
@@ -177,6 +179,10 @@ Creates a related or linked object.
 sub create_related {
     my ($self, $relation_name, $object) = @_;
     
+    #say "Creating related object $relation_name";
+    #say "with initial data:";
+    #say Dumper $object;
+    
     if (my $relation = $self->meta->relationship->{$relation_name}) {
         given ($relation->{type}) {
             when ('one2many') {
@@ -190,7 +196,9 @@ sub create_related {
                     
                     my $far_end_relation;
                     REL: while (my ($key, $value) = each %$related_meta) {
-                        if ($value->{class} = $name) {
+                        #say "Searching for far-end relation $key";
+                        if ($value->{class} eq $name) {
+                            say "Found it";
                             $far_end_relation = $key;
                             last REL;
                         }
@@ -199,6 +207,7 @@ sub create_related {
                     if ($far_end_relation) {
                         my $foreign_key = $related_meta->{$far_end_relation}->{key};
                         
+                        #say "Far end relation exists";
                         $self->class->schema->class($relation->{class})->create({
                             %$object,
                             $foreign_key => $self->id,
@@ -208,8 +217,12 @@ sub create_related {
                     } else {
                         my $new_object = $self->class->schema->class($relation->{class})->create($object);
                         
-                        push @{$self->{$relation->{key}}}, $new_object->id;
-                        $self->update;
+                        $self->refresh;
+                        
+                        unless (grep {$new_object->id} @{$self->{$relation->{key}}}) {
+                            push @{$self->{$relation->{key}}}, $new_object->id;
+                            $self->update;
+                        }
                     }
                 }
             }
@@ -272,6 +285,27 @@ sub add_related {
     }
 }
 
+
+#-------------------------------------------------------------------------------
+
+=head2 set_related
+
+=cut
+
+sub set_related {
+    my ($self, $relation_name, $object) = @_;
+    
+    if (my $relation = $self->meta->relationship->{$relation_name}) {
+        if ($relation->{type} eq 'many2one') {
+            $self->{$relation->{key}} = $object->id;
+            $self->update_single($relation->{key});
+        } else {
+            carp "Can only use set_related() on many2one relationships";
+        }
+    } else {
+        carp "Relation '$relation_name' does not exist!";
+    }
+}
 
 #-------------------------------------------------------------------------------
 

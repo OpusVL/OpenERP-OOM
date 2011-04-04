@@ -1,6 +1,7 @@
 package OpenERP::OOM::Object;
 
 use 5.010;
+use Carp;
 use Moose;
 use Moose::Exporter;
 use Moose::Util::MetaRole;
@@ -72,10 +73,14 @@ sub openerp_model {
 sub relationship {
     my ($meta, $name, %options) = @_;
     
+    #carp "Adding relationship $name";
+    
     $meta->relationship({
         %{$meta->relationship},
         $name => \%options
     });
+    
+    #say "Adding hooks";
     
     given ($options{type}) {
         when ('many2one') {

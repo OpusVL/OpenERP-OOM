@@ -1,6 +1,8 @@
 package OpenERP::OOM::Class::Base;
 
 use 5.010;
+use Carp;
+use Data::Dumper;
 use Moose;
 
 extends 'Moose::Object';
@@ -150,6 +152,38 @@ Returns the new object or C<undef> if it could not be created.
 
 sub create {
     my ($self, $object_data) = @_;
+
+    #carp "Create called with initial object data: ";
+    #say Dumper $object_data;
+    
+    # Check for relationships in the object data
+    #say "Looking for relationships in ".$self->object_class;
+    my $relationships = $self->object_class->meta->relationship;
+    while (my ($name, $rel) = each %$relationships) {
+        #say "Testing for relationship $name";
+        if ($rel->{type} eq 'one2many') {
+            #say "one2many";
+            if ($object_data->{$name}) {
+                #say "Found object data";
+                #say "Setting key " . $rel->{key} . " to " . $object_data->{$name}->id;
+                $object_data->{$rel->{key}} = $object_data->{$name}->id;
+                delete $object_data->{$name};
+            }
+        }
+        
+        if ($rel->{type} eq 'many2one') {
+            #say "many2one";
+            if ($object_data->{$name}) {
+                #say "Found object data";
+                #say "Setting key " . $rel->{key} . " to " . $object_data->{$name}->id;
+                $object_data->{$rel->{key}} = $object_data->{$name}->id;
+                delete $object_data->{$name};
+            }            
+        }
+    }
+    
+    #say "Creating object in class: " . $self->object_class;
+    #say Dumper $object_data;
     
     if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) {
         return $self->retrieve($id);
