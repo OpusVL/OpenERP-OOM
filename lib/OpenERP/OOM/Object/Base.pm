@@ -59,20 +59,28 @@ Updates an object in OpenERP after its properties have been changed.
 sub update {
     my $self = shift;
     
-    # FIXME - if an object is a key in a many2many relationship, change the
-    # value to update to [[6,0,[@val]]]
-    
     my $object;
     foreach my $attribute ($self->meta->get_all_attributes) {
         # FIXME - This should only update properties that have been changed,
         # not all properties of the object
         next if ($attribute->name eq 'id');
-                
-        # FIXME - Only direct (scalar) properties should be updated, not relationships
         next if ($attribute->name =~ '^_');
-        next if ($attribute->name =~ 'address');  # FIXME - need way of updating relationships
 
         $object->{$attribute->name} = $self->{$attribute->name};
+    }
+
+    my $relationships = $self->meta->relationship;
+    while (my ($name, $rel) = each %$relationships) {
+        if ($object->{$rel->{key}}) {
+            given ($rel->{type}) {
+                when ('one2many') {
+                    delete $object->{$rel->{key}};  # Don't update one2many relationships
+                }
+                when ('many2many') {
+                    $object->{$rel->{key}} = [[6,0,$object->{$rel->{key}}]];
+                }
+            }
+        }
     }
 
     $self->class->schema->client->update($self->model, $self->id, $object);
