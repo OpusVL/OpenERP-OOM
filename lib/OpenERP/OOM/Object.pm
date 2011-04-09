@@ -175,7 +175,20 @@ sub _add_link_single {
         $name,
         sub {
             my $self = shift;
-            return $self->class->schema->link($options{class})->retrieve($options{args}, $self->{$options{key}});
+
+            #state $linked_object = do {
+                state $link = $self->class->schema->link($options{class})->retrieve($options{args}, $self->{$options{key}});
+            
+                $link->meta->make_mutable;
+                $link->meta->add_method(
+                    '_source',
+                    sub { return $self }
+                );
+                
+                $link;
+            #}
+            
+            #return $linked_object;
         },
     );
 }
