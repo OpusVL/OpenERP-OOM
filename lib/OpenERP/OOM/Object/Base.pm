@@ -42,6 +42,41 @@ has 'id' => (
     is  => 'ro',
 );
 
+sub BUILD {
+    my $self = shift;
+    
+    # Add methods to follow links
+    my $links = $self->meta->link;
+    while (my ($name, $link) = each %$links) {
+        given ($link->{type}) {
+            when ('single') {
+                $self->meta->add_method(
+                    $name,
+                    sub {
+                        state $linked = $self->class->schema->link($link->{class})->retrieve($link->{args}, $self->{$link->{key}});
+        
+                        $linked->meta->make_mutable;
+                        $linked->meta->add_method(
+                            '_source',
+                            sub { return $self }
+                        );
+                        
+                        return $linked;
+                    }
+                )
+            }
+            when ('multiple') {
+                $self->meta->add_method(
+                    $name,
+                    sub {
+                        return $self->class->schema->link($link->{class})->retrieve_list($link->{args}, $self->{$link->{key}});
+                    }
+                )
+            }
+        }
+    }
+}
+
 
 #-------------------------------------------------------------------------------
 
