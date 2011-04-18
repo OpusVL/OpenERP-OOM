@@ -339,11 +339,18 @@ sub set_related {
     my ($self, $relation_name, $object) = @_;
     
     if (my $relation = $self->meta->relationship->{$relation_name}) {
-        if ($relation->{type} eq 'many2one') {
-            $self->{$relation->{key}} = $object->id;
-            $self->update_single($relation->{key});
-        } else {
-            carp "Can only use set_related() on many2one relationships";
+        given ($relation->{type}) {
+            when ('many2one') {
+                $self->{$relation->{key}} = $object->id;
+                $self->update_single($relation->{key});
+            }
+            when ('many2many') {
+                $self->{$relation->{key}} = [$object->id];
+                $self->update_single($relation->{key});
+            }
+            default {
+                carp "Cannot use set_related() on a $_ relationship";
+            }
         }
     } else {
         carp "Relation '$relation_name' does not exist!";
