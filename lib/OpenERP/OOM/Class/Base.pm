@@ -4,6 +4,7 @@ use 5.010;
 use Carp;
 use Data::Dumper;
 use Moose;
+use RPC::XML;
 
 extends 'Moose::Object';
 
@@ -184,6 +185,15 @@ sub create {
     
     warn "Creating object in class: " . $self->object_class;
     warn Dumper $object_data;
+    
+    # Force Str parameters to be object type RPC::XML::string
+    foreach my $attribute ($self->object_class->meta->get_all_attributes) {
+        if ($attribute->type_constraint eq 'Str') {
+            if (exists $object_data->{$attribute->name}) {
+                $object_data->{$attribute->name} = RPC::XML::string->new($object_data->{$attribute->name});
+            }
+        }
+    }
     
     if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) {
         return $self->retrieve($id);

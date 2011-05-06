@@ -132,6 +132,15 @@ sub update {
         }
     }
 
+    # Force Str parameters to be object type RPC::XML::string
+    foreach my $attribute ($self->meta->get_all_attributes) {
+        if ($attribute->type_constraint eq 'Str') {
+            if (exists $object->{$attribute->name}) {
+                $object->{$attribute->name} = RPC::XML::string->new($object->{$attribute->name});
+            }
+        }
+    }
+
     $self->class->schema->client->update($self->model, $self->id, $object);
     $self->refresh;
     
@@ -162,6 +171,15 @@ sub update_single {
     while (my ($name, $rel) = each %$relationships) {
         if ($rel->{type} eq 'many2many') {
             $value = [[6,0,$value]];
+        }
+    }
+
+    # Force Str parameters to be object type RPC::XML::string
+    foreach my $attribute ($self->meta->get_all_attributes) {
+        if ($attribute->type_constraint eq 'Str') {
+            if ($attribute->name eq $property) {
+                $value = RPC::XML::string->new($value);
+            }
         }
     }
     
