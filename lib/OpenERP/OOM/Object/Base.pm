@@ -89,10 +89,24 @@ Updates an object in OpenERP after its properties have been changed.
  $obj->name('New name');
  $obj->update;
 
+Also allows a hashref to be passed to update multiple properties:
+
+ $obj->update({
+    name  => 'new name',
+    ref   => 'new reference',
+    price => 'new price',
+ });
+
 =cut
 
 sub update {
     my $self = shift;
+    
+    if (my $update = shift) {
+        while (my ($param, $value) = each %$update) {
+            $self->$param($value);
+        }
+    }
     
     my $object;
     foreach my $attribute ($self->meta->get_all_attributes) {
