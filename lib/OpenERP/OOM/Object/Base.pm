@@ -254,9 +254,9 @@ Creates a related or linked object.
 sub create_related {
     my ($self, $relation_name, $object) = @_;
     
-    #say "Creating related object $relation_name";
-    #say "with initial data:";
-    #say Dumper $object;
+    warn "Creating related object $relation_name";
+    warn "with initial data:";
+    warn Dumper $object;
     
     if (my $relation = $self->meta->relationship->{$relation_name}) {
         given ($relation->{type}) {
@@ -271,9 +271,7 @@ sub create_related {
                     
                     my $far_end_relation;
                     REL: while (my ($key, $value) = each %$related_meta) {
-                        #say "Searching for far-end relation $key";
                         if ($value->{class} eq $name) {
-                            say "Found it";
                             $far_end_relation = $key;
                             last REL;
                         }
@@ -282,7 +280,7 @@ sub create_related {
                     if ($far_end_relation) {
                         my $foreign_key = $related_meta->{$far_end_relation}->{key};
                         
-                        #say "Far end relation exists";
+                        warn "Far end relation exists";
                         $self->class->schema->class($relation->{class})->create({
                             %$object,
                             $foreign_key => $self->id,
