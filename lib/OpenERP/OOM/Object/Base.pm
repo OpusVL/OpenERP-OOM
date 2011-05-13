@@ -53,15 +53,24 @@ sub BUILD {
                 $self->meta->add_method(
                     $name,
                     sub {
-                        state $linked = $self->class->schema->link($link->{class})->retrieve($link->{args}, $self->{$link->{key}});
+                        #state $linked = $self->class->schema->link($link->{class})->retrieve($link->{args}, $self->{$link->{key}});
+                        my $obj = shift;
+                        $obj->{"_$name"} //= $obj->class->schema->link($link->{class})->retrieve($link->{args}, $obj->{$link->{key}});
         
-                        $linked->meta->make_mutable;
-                        $linked->meta->add_method(
+                        #$linked->meta->make_mutable;
+                        #$linked->meta->add_method(
+                        #    '_source',
+                        #    sub { return $self }
+                        #);
+                        #
+                        #return $linked;
+                        $obj->{"_$name"}->meta->make_mutable;
+                        $obj->{"_$name"}->meta->add_method(
                             '_source',
                             sub { return $self }
                         );
                         
-                        return $linked;
+                        return $obj->{"_$name"};
                     }
                 )
             }
