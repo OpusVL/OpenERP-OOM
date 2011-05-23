@@ -166,7 +166,7 @@ Updates OpenERP with a single property of an object.
  $obj->name('New name');
  $obj->status('Active');
  
- $obj->update('name');  # Only the 'name' property is updated
+ $obj->update_single('name');  # Only the 'name' property is updated
 
 =cut
 
