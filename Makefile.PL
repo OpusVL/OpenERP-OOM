@@ -7,7 +7,12 @@ author   q{Jon Allen (JJ) <jj@opusvl.com>};
 build_requires 'Test::More';
 
 requires 'Moose';
+requires 'Moose::Exporter';
+requires 'Moose::Role';
+requires 'Moose::Util::MetaRole';
+requires 'Moose::Util::TypeConstraints';
 requires 'List::MoreUtils';
+requires 'RPC::XML';
 
 auto_install;
 
