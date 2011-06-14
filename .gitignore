@@ -12,3 +12,4 @@ pod2htm*.tmp
 OpenERP-OOM-*
 inc
 META.yml
+/MANIFEST.bak
