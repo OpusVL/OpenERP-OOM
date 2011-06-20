@@ -43,4 +43,14 @@ sub retrieve {
 
 #-------------------------------------------------------------------------------
 
+sub search {
+    my ($self, $args, $search, $options) = @_;
+    
+    # FIXME - Foreign primary key column is hard-coded to "id"
+    return map {$_->id} $self->dbic_schema->resultset($args->{class})->search($search, $options)->all;
+}
+
+
+#-------------------------------------------------------------------------------
+
 1;

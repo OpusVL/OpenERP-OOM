@@ -61,14 +61,49 @@ The query is formatted as a list of array references, each specifying a
 column name, operator, and value. The objects returned will be those where
 all of these sub-queries match.
 
+Searches can be performed against OpenERP fields, linked objects (e.g. DBIx::Class
+relationships), or a combination of both.
+
+ my @list = $schema->class('Name')->search(
+     ['active', '=', 1],
+     ['details', {status => 'value'}, {}],
+ )
+
+In this example, 'details' is a linked DBIx::Class object with a column called
+'status'.
+
 =cut
 
 sub search {
-    my $self = shift;
+    my ($self, @search) = @_;
     
-    my $objects = $self->schema->client->search_detail($self->object_class->model,[@_]);
+    # Loop through each search criteria, and if it is a linked object 
+    # search, replace it with a translated OpenERP search parameter.
+    foreach my $criteria (@search) {
+        my $search_field = $criteria->[0];
+        
+        if (my $link = $self->object_class->meta->link->{$search_field}) {
+            if ($self->schema->link($link->{class})->can('search')) {
+                my @results = $self->schema->link($link->{class})->search($link->{args}, @$criteria[1 .. @$criteria-1]);
+                
+                if (@results) {
+                    $criteria = [$link->{key}, 'in', \@results];
+                } else {
+                    return undef;  # No results found, so no point searching in OpenERP
+                }
+            } else {
+                carp "Cannot search for link type " . $link->{class};
+            }
+        }
+    }
     
-    return map {$self->object_class->new($_)} @$objects;
+    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search]);
+
+    if ($objects) {    
+        return map {$self->object_class->new($_)} @$objects;
+    } else {
+        return wantarray ? () : undef;
+    }
 }
 
 
