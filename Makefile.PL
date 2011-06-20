@@ -11,6 +11,7 @@ requires 'Moose::Exporter';
 requires 'Moose::Role';
 requires 'Moose::Util::MetaRole';
 requires 'Moose::Util::TypeConstraints';
+requires 'MooseX::Role::XMLRPC::Client';
 requires 'List::MoreUtils';
 requires 'RPC::XML';
 
