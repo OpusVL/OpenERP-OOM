@@ -65,7 +65,7 @@ sub BUILD {
                         $obj->{"_$name"}->meta->make_mutable;
                         $obj->{"_$name"}->meta->add_method(
                             '_source',
-                            sub { return $self }
+                            sub { return $obj }
                         );
                         
                         return $obj->{"_$name"};
@@ -170,7 +170,6 @@ Updates OpenERP with a single property of an object.
 
 sub update_single {
     my ($self, $property) = @_;
-    
     my $value = $self->{$property};
     
     # Check to see if the property is the key to a many2many relationship
