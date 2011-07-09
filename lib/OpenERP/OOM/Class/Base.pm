@@ -93,7 +93,7 @@ sub search {
                 if (@results) {
                     $criteria = [$link->{key}, 'in', \@results];
                 } else {
-                    return undef;  # No results found, so no point searching in OpenERP
+                    return ();  # No results found, so no point searching in OpenERP
                 }
             } else {
                 carp "Cannot search for link type " . $link->{class};
