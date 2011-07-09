@@ -39,6 +39,10 @@ has 'object_class' => (
 sub _build_object_class {
     my $self = shift;
     
+    # if you get this blow up it probably means the class doesn't compile for some
+    # reason.  Run the t/00-load.t tests.  If they pass check you have a use_ok 
+    # statement for all your modules.
+    die 'Your code doesn\'t compile llamma' if !$self->can('object');
     eval "use " . $self->object;
     
     $self->object->meta->add_method('class' => sub{return $self});
