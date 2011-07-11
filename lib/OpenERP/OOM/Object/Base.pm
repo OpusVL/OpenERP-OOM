@@ -135,6 +135,10 @@ sub update {
                 when ('many2many') {
                     $object->{$rel->{key}} = [[6,0,$object->{$rel->{key}}]];
                 }
+                when ('many2one') {
+                    # FIXME: Allow these relationships to be updated using the update()
+                    # method as well as using the set_related() method
+                }
             }
         }
     }
