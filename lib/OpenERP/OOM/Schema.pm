@@ -4,6 +4,8 @@ use 5.010;
 use Moose;
 use OpenERP::XMLRPC::Client;
 
+with 'OpenERP::OOM::Link::Provider';
+
 has 'openerp_connect' => (
     isa => 'HashRef',
     is  => 'ro',
@@ -14,6 +16,12 @@ has 'link_config' => (
     is  => 'ro',
 );
 
+has link_provider => (
+    isa => 'OpenERP::OOM::Link::Provider',
+    is => 'ro',
+    lazy_build => 1,
+);
+
 has 'client' => (
     isa     => 'OpenERP::XMLRPC::Client',
     is      => 'ro',
@@ -21,6 +29,13 @@ has 'client' => (
     builder => '_build_client',
 );
 
+sub _build_link_provider
+{
+    # we are also a link provider
+    # so use that if one isn't provided.
+    my $self = shift;
+    return $self;
+}
 
 #-------------------------------------------------------------------------------
 
@@ -48,7 +63,14 @@ sub class {
 
 #-------------------------------------------------------------------------------
 
-sub link {
+sub link 
+{
+    my ($self, $class) = @_;
+
+    return $self->link_provider->provide_link($class);
+}
+
+sub provide_link {
     my ($self, $class) = @_;
     
     my $package = ($class =~ /^\+/) ? $class : "OpenERP::OOM::Link::$class";
