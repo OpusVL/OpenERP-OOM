@@ -1,4 +1,3 @@
-.DS_Store
 Changes
 'doc/OpenERP OOM Object Model.pdf'
 ignore.txt
@@ -13,16 +12,11 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-lib/.DS_Store
-lib/OpenERP/.DS_Store
 lib/OpenERP/OOM.pm
-lib/OpenERP/OOM/.DS_Store
 lib/OpenERP/OOM/Class.pm
 lib/OpenERP/OOM/Class/Base.pm
 lib/OpenERP/OOM/Link.pm
 lib/OpenERP/OOM/Link/DBIC.pm
-lib/OpenERP/OOM/Meta/.DS_Store
-lib/OpenERP/OOM/Meta/Class/.DS_Store
 lib/OpenERP/OOM/Meta/Class/Trait/HasLink.pm
 lib/OpenERP/OOM/Meta/Class/Trait/HasRelationship.pm
 lib/OpenERP/OOM/Object.pm
@@ -30,6 +24,7 @@ lib/OpenERP/OOM/Object/Base.pm
 lib/OpenERP/OOM/Schema.pm
 Makefile.PL
 MANIFEST
+MANIFEST.SKIP
 META.yml
 README
 t/00-load.t

@@ -1,0 +1,12 @@
+.git/
+.svn
+blib
+pm_to_blib
+MANIFEST.bak
+MANIFEST.SKIP~
+cover_db
+Makefile$
+.DS_Store
+Makefile.old$
+^OpenERP-OOM-
+^.gitignore
