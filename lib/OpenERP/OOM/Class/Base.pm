@@ -91,6 +91,7 @@ sub search {
                 my @results = $self->schema->link($link->{class})->search($link->{args}, @$criteria[1 .. @$criteria-1]);
                 
                 if (@results) {
+                    warn "Adding to OpenERP search: " . $link->{key} . " IN " . join(', ', @results);
                     $criteria = [$link->{key}, 'in', \@results];
                 } else {
                     return ();  # No results found, so no point searching in OpenERP
