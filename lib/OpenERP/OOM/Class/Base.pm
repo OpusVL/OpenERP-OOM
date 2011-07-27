@@ -135,6 +135,25 @@ sub find {
 }
 
 
+=head2 get_options
+
+This returns the options for available for a selection field.  It will croak if you
+try to give it a field that isn't an option.
+
+=cut
+
+sub get_options 
+{
+    my $self = shift;
+    my $field = shift;
+
+    my $model_info = $self->schema->client->model_fields($self->object_class->model);
+    my $field_info = $model_info->{$field};
+    croak 'Can only get options for selection objects' unless $field_info->{type} eq 'selection';
+    my $options = $field_info->{selection};
+    return $options;
+}
+
 #-------------------------------------------------------------------------------
 
 =head2 retrieve
