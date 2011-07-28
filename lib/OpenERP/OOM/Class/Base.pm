@@ -220,14 +220,7 @@ sub create {
     # Check for relationships in the object data
     warn "Looking for relationships in ".$self->object_class;
     my $relationships = $self->object_class->meta->relationship;
-    # this is proper fruity and I really don't understand it.
-    # if you use the while on it's own it'll fail in at least one
-    # case.  If you use the while and the warn it'll work fine
-    # wtf?
-    #warn Dumper $relationships;
-    for my $name (keys %$relationships) {
-    #while (my ($name, $rel) = each %$relationships) {
-        my $rel = $relationships->{$name};
+    while (my ($name, $rel) = each %$relationships) {
         warn "Testing for relationship $name";
         if ($rel->{type} eq 'one2many') {
             warn "one2many";

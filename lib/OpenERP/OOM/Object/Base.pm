@@ -281,7 +281,8 @@ sub create_related {
                     my $related_meta = $related_class->meta->relationship;
                     
                     my $far_end_relation;
-                    REL: while (my ($key, $value) = each %$related_meta) {
+                    REL: for my $key (keys %$related_meta) {
+                        my $value = $related_meta->{$key};
                         if ($value->{class} eq $name) {
                             $far_end_relation = $key;
                             last REL;
