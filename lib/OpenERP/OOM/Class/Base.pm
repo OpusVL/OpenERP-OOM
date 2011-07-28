@@ -227,7 +227,7 @@ sub create {
                 warn "Found object data";
                 warn "Setting key " . $rel->{key} . " to " . $object_data->{$name}->id;
                 $object_data->{$rel->{key}} = $object_data->{$name}->id;
-                delete $object_data->{$name};
+                delete $object_data->{$name} if $name ne $rel->{key};
             }
         }
         
@@ -237,7 +237,7 @@ sub create {
                 warn "Found object data";
                 warn "Setting key " . $rel->{key} . " to " . $object_data->{$name}->id;
                 $object_data->{$rel->{key}} = $object_data->{$name}->id;
-                delete $object_data->{$name};
+                delete $object_data->{$name} if $name ne $rel->{key};
             }            
         }
     }
