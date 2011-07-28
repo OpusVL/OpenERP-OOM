@@ -3,6 +3,7 @@ package OpenERP::OOM::Link::DBIC;
 use 5.010;
 use Moose;
 extends 'OpenERP::OOM::Link';
+with 'OpenERP::OOM::DynamicUtils';
 
 has 'dbic_schema' => (
     is      => 'ro',
@@ -13,7 +14,7 @@ has 'dbic_schema' => (
 sub _build_dbic_schema {
     my $self = shift;
     
-    eval "use " . $self->config->{schema_class};
+    $self->ensure_class_loaded($self->config->{schema_class});
     
     return $self->config->{schema_class}->connect(@{$self->config->{connect_info}});
 }

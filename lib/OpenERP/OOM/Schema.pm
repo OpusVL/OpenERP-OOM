@@ -4,6 +4,7 @@ use 5.010;
 use Moose;
 use OpenERP::XMLRPC::Client;
 
+with 'OpenERP::OOM::DynamicUtils';
 with 'OpenERP::OOM::Link::Provider';
 
 has 'openerp_connect' => (
@@ -53,7 +54,7 @@ sub class {
     
     my $package = $self->meta->name . "::Class::$class";
     
-    eval "use $package";
+    $self->ensure_class_loaded($package);
     
     return $package->new(
         schema => $self,
@@ -75,7 +76,7 @@ sub provide_link {
     
     my $package = ($class =~ /^\+/) ? $class : "OpenERP::OOM::Link::$class";
 
-    eval "use $package";
+    $self->ensure_class_loaded($package);
     
     return $package->new(
         schema => $self,

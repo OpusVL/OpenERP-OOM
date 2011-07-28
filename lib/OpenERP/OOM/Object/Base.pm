@@ -7,6 +7,7 @@ use List::MoreUtils qw/uniq/;
 use Moose;
 
 extends 'Moose::Object';
+with 'OpenERP::OOM::DynamicUtils';
 
 =head1 NAME
 
@@ -276,7 +277,7 @@ sub create_related {
                     my ($base, $name) = ($1, $2);
                     my $related_class = $base . "::" . $relation->{class};
                     
-                    eval "use $related_class";
+                    $self->ensure_class_loaded($related_class);
                     my $related_meta = $related_class->meta->relationship;
                     
                     my $far_end_relation;

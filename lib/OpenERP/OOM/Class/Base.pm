@@ -7,6 +7,7 @@ use Moose;
 use RPC::XML;
 
 extends 'Moose::Object';
+with 'OpenERP::OOM::DynamicUtils';
 
 =head1 NAME
 
@@ -43,7 +44,7 @@ sub _build_object_class {
     # reason.  Run the t/00-load.t tests.  If they pass check you have a use_ok 
     # statement for all your modules.
     die 'Your code doesn\'t compile llamma' if !$self->can('object');
-    eval "use " . $self->object;
+    $self->ensure_class_loaded($self->object);
     
     $self->object->meta->add_method('class' => sub{return $self});
     

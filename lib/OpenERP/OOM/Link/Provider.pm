@@ -3,6 +3,7 @@ package OpenERP::OOM::Link::Provider;
 use Moose::Role;
 
 requires 'provide_link';
+with 'OpenERP::OOM::DynamicUtils';
 
 =head1 NAME
 
@@ -27,6 +28,7 @@ normally a DBIC dataset.
         my $package = ($class =~ /^\+/) ? $class : "OpenERP::OOM::Link::$class";
 
         eval "use $package";
+        $self->ensure_class_loaded($package);
         
         return $package->new(
             schema => $self,
