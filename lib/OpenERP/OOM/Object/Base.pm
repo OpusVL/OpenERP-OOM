@@ -146,10 +146,8 @@ sub update {
 
     # Force Str parameters to be object type RPC::XML::string
     foreach my $attribute ($self->meta->get_all_attributes) {
-        if ($attribute->type_constraint eq 'Str') {
-            if (exists $object->{$attribute->name}) {
-                $object->{$attribute->name} = RPC::XML::string->new($object->{$attribute->name});
-            }
+        if (exists $object->{$attribute->name}) {
+            $object->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object->{$attribute->name});
         }
     }
 
@@ -158,7 +156,6 @@ sub update {
     
     return $self;
 }
-
 
 #-------------------------------------------------------------------------------
 
@@ -187,10 +184,8 @@ sub update_single {
 
     # Force Str parameters to be object type RPC::XML::string
     foreach my $attribute ($self->meta->get_all_attributes) {
-        if ($attribute->type_constraint eq 'Str') {
-            if ($attribute->name eq $property) {
-                $value = RPC::XML::string->new($value);
-            }
+        if ($attribute->name eq $property) {
+            $value = $self->prepare_attribute_for_send($attribute->type_constraint, $value);
         }
     }
     

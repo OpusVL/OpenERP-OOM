@@ -28,5 +28,17 @@ sub ensure_class_loaded
     return;
 }
 
+sub prepare_attribute_for_send
+{
+    my $self = shift;
+    my $type = shift;
+    my $value = shift;
+
+    return RPC::XML::string->new($value) if $type eq 'Str';
+    return $value->ymd if $type eq 'DateTime' && $value && $value->can('ymd');
+    
+    return $value;
+}
+
 1;
 

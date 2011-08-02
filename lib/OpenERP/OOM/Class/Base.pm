@@ -5,6 +5,8 @@ use Carp;
 use Data::Dumper;
 use Moose;
 use RPC::XML;
+use DateTime;
+use DateTime::Format::Strptime;
 
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
@@ -170,6 +172,14 @@ sub retrieve {
     
     # FIXME - This should probably be in a try/catch block
     if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) {
+        # Mung dates
+        foreach my $attribute ($self->object_class->meta->get_all_attributes) {
+            if($attribute->type_constraint eq 'DateTime')
+            {
+                my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
+                $object->{$attribute->name} = $parser->parse_datetime($object->{$attribute->name});
+            }
+        }
         return $self->object_class->new($object);
     }
 }
@@ -244,16 +254,14 @@ sub create {
     }
     
     warn "Creating object in class: " . $self->object_class;
-    warn Dumper $object_data;
     
     # Force Str parameters to be object type RPC::XML::string
     foreach my $attribute ($self->object_class->meta->get_all_attributes) {
-        if ($attribute->type_constraint eq 'Str') {
-            if (exists $object_data->{$attribute->name}) {
-                $object_data->{$attribute->name} = RPC::XML::string->new($object_data->{$attribute->name});
-            }
+        if (exists $object_data->{$attribute->name}) {
+            $object_data->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object_data->{$attribute->name});
         }
     }
+    warn Dumper $object_data;
     
     if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) {
         return $self->retrieve($id);
