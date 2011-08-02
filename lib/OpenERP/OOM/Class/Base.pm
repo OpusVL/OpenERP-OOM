@@ -108,6 +108,13 @@ sub search {
     my $objects = $self->schema->client->search_detail($self->object_class->model,[@search]);
 
     if ($objects) {    
+        foreach my $attribute ($self->object_class->meta->get_all_attributes) {
+            if($attribute->type_constraint eq 'DateTime')
+            {
+                my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
+                map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
+            }
+        }
         return map {$self->object_class->new($_)} @$objects;
     } else {
         return wantarray ? () : undef;
@@ -172,7 +179,6 @@ sub retrieve {
     
     # FIXME - This should probably be in a try/catch block
     if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) {
-        # Mung dates
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
             if($attribute->type_constraint eq 'DateTime')
             {
@@ -199,6 +205,13 @@ sub retrieve_list {
     my ($self, $ids) = @_;
     
     if (my $objects = $self->schema->client->read($self->object_class->model, $ids)) {
+        foreach my $attribute ($self->object_class->meta->get_all_attributes) {
+            if($attribute->type_constraint eq 'DateTime')
+            {
+                my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
+                map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
+            }
+        }
         return map {$self->object_class->new($_)} @$objects;
     }
 }
