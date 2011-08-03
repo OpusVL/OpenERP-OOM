@@ -19,7 +19,7 @@ use Moose::Util::TypeConstraints;
 # as a single integer containing the related object ID.
 
 subtype 'OpenERP::OOM::Type::Many2One'
-    => as 'Int';
+    => as 'Maybe[Int]';
 
 coerce 'OpenERP::OOM::Type::Many2One'
     => from 'ArrayRef'
