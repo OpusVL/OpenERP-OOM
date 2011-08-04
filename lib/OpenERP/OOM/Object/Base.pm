@@ -328,6 +328,71 @@ sub create_related {
     }
 }
 
+=head2 search_related
+
+Searches for objects of a relation associated with this object.
+
+    my @lines = $po->search_related('order_lines', [ 'state', '=', 'draft' ]);
+
+This only works with relationships to OpenERP objects (i.e. not DBIC) and 
+to one2many relationships where the other side of the relationship has a field
+pointing back to the object you are searching from.
+
+In any other case the method will croak.
+
+=cut
+
+sub search_related {
+    my ($self, $relation_name, @search) = @_;
+
+    # find the relation details and add it to the search criteria.
+    if (my $relation = $self->meta->relationship->{$relation_name}) {
+        given ($relation->{type}) {
+            when ('one2many') {
+                my $class = $self->meta->name;
+                if ($class =~ m/(.*?)::(\w+)$/) {
+                    my ($base, $name) = ($1, $2);
+                    my $related_class = $base . "::" . $relation->{class};
+                    
+                    $self->ensure_class_loaded($related_class);
+                    my $related_meta = $related_class->meta->relationship;
+                    
+                    my $far_end_relation;
+                    REL: for my $key (keys %$related_meta) {
+                        my $value = $related_meta->{$key};
+                        if ($value->{class} eq $name) {
+                            $far_end_relation = $key;
+                            last REL;
+                        }
+                    }
+                    
+                    if ($far_end_relation) {
+
+                        my $foreign_key = $related_meta->{$far_end_relation}->{key};
+                        
+                        push @search, [ $foreign_key, '=', $self->id ];
+                        return $related_class->class->search(@search);
+                        
+                    } else {
+                        # well, perhaps we could fix this, but I can't be bothered at the moment.
+                        croak 'Unable to search_related without relationship back';
+                    }
+                }
+            }
+            when ('many2many') {
+                croak 'Unable to search_related many2many relationships';
+            }
+            when ('many2one') {
+                croak 'Unable to search_related many2one relationships';
+            }
+        }
+    } elsif ($relation = $self->meta->link->{$relation_name}) {
+        croak 'Unable to search_related outside NonOpenERP';
+    }
+
+    croak 'Unable to search_related'; # beat up the lame programmer who did this.
+}
+
 
 #-------------------------------------------------------------------------------
 
