@@ -382,10 +382,8 @@ sub search_related {
                 my $class = $self->meta->name;
                 if ($class =~ m/(.*?)::(\w+)$/) {
                     my ($base, $name) = ($1, $2);
-                    my $related_class = $base . "::" . $relation->{class};
-                    
-                    $self->ensure_class_loaded($related_class);
-                    my $related_meta = $related_class->meta->relationship;
+                    my $related_class = $self->class->schema->class($relation->{class});
+                    my $related_meta = $related_class->object->meta->relationship;
                     
                     my $far_end_relation;
                     REL: for my $key (keys %$related_meta) {
@@ -401,7 +399,7 @@ sub search_related {
                         my $foreign_key = $related_meta->{$far_end_relation}->{key};
                         
                         push @search, [ $foreign_key, '=', $self->id ];
-                        return $related_class->class->search(@search);
+                        return $related_class->search(@search);
                         
                     } else {
                         # well, perhaps we could fix this, but I can't be bothered at the moment.
