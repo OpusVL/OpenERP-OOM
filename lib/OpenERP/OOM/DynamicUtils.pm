@@ -13,6 +13,7 @@ sub ensure_class_loaded
     return if Class::Inspector->loaded($class);
 
     my $file = Class::Inspector->filename($class);
+    Carp::croak "Unable to find class $class" unless $file;
     # code stolen from Class::C3::Componentised ensure_class_loaded
     eval { local $_; require($file) } or do {
 
