@@ -328,6 +328,36 @@ sub create_related {
     }
 }
 
+=head2 find_related
+
+Finds a property related to the current object.
+
+    my $line = $po->find_related('order_lines', [ 'id', '=', 1 ]);
+
+This only works with relationships to OpenERP objects (i.e. not DBIC) and 
+to one2many relationships where the other side of the relationship has a field
+pointing back to the object you are searching from.
+
+In any other case the method will croak.
+
+If the search criteria return more than one result it will whine.
+
+=cut
+
+sub find_related {
+    my ($self) = shift;
+    my @results = $self->search_related(@_);
+    if(scalar @results > 1)
+    {
+        # should this just croak?
+        carp 'find_related returned more than 1 result';
+    }
+    if(@results)
+    {
+        return $results[0];
+    }
+}
+
 =head2 search_related
 
 Searches for objects of a relation associated with this object.
