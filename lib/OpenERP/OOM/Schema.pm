@@ -53,8 +53,10 @@ sub class {
     my ($self, $class) = @_;
     
     my $package = $self->meta->name . "::Class::$class";
+    my $object_package = $self->meta->name . "::Object::$class";
     
     $self->ensure_class_loaded($package);
+    $self->ensure_class_loaded($object_package);
     
     return $package->new(
         schema => $self,
