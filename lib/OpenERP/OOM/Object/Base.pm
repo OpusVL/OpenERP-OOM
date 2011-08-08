@@ -117,14 +117,13 @@ sub update {
     }
     
     my $object;
-    foreach my $attribute ($self->meta->get_all_attributes) {
-        # FIXME - This should only update properties that have been changed,
-        # not all properties of the object
-        next if ($attribute->name eq 'id');
-        next if ($attribute->name =~ '^_');
+    foreach my $attribute ($self->dirty_attributes) {
+        next if ($attribute eq 'id');
+        next if ($attribute =~ '^_');
 
-        $object->{$attribute->name} = $self->{$attribute->name};
+        $object->{$attribute} = $self->{$attribute};
     }
+    $self->mark_all_clean; # reset the dirty attribute
 
     my $relationships = $self->meta->relationship;
     while (my ($name, $rel) = each %$relationships) {
