@@ -123,7 +123,6 @@ sub update {
 
         $object->{$attribute} = $self->{$attribute};
     }
-    $self->mark_all_clean; # reset the dirty attribute
 
     my $relationships = $self->meta->relationship;
     while (my ($name, $rel) = each %$relationships) {
@@ -211,6 +210,7 @@ sub refresh {
         my $name = $attribute->name;
         $self->{$name} = ($new->$name);
     }
+    $self->mark_all_clean; # reset the dirty attribute
     
     return $self;
 }
