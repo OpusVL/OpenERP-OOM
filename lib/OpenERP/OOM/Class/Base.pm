@@ -59,10 +59,10 @@ sub _build_object_class {
 
 Searches OpenERP and returns a list of objects matching a given query.
 
- my @list = $schema->class('Name')->search(
-     ['name', 'ilike', 'OpusVL'],
-     ['active', '=', 1],
- );
+    my @list = $schema->class('Name')->search(
+        ['name', 'ilike', 'OpusVL'],
+        ['active', '=', 1],
+    );
 
 The query is formatted as a list of array references, each specifying a
 column name, operator, and value. The objects returned will be those where
@@ -71,18 +71,41 @@ all of these sub-queries match.
 Searches can be performed against OpenERP fields, linked objects (e.g. DBIx::Class
 relationships), or a combination of both.
 
- my @list = $schema->class('Name')->search(
-     ['active', '=', 1],
-     ['details', {status => 'value'}, {}],
- )
+    my @list = $schema->class('Name')->search(
+        ['active', '=', 1],
+        ['details', {status => 'value'}, {}],
+    )
 
 In this example, 'details' is a linked DBIx::Class object with a column called
 'status'.
 
+An optional 'search context' can also be provided at the end of the query list, e.g.
+
+    my @list = $schema->class('Location')->search(
+        ['usage' => '=' => 'internal'],
+        ['active' => '=' => 1],
+        {
+            active_id => $self->id,
+            active_ids => [$self->id],
+            active_model => 'product.product',
+            full => 1,
+            product_id => $self->id,
+            search_default_in_location => 1,
+            section_id => undef,
+            tz => undef,
+        }
+    );
+
+Supplying a context further restricts the search, for example to narrow down a
+'stock by location' query to 'stock of a specific product by location'.
+
 =cut
 
 sub search {
-    my ($self, @search) = @_;
+    my ($self, @args) = @_;
+    
+    my @search;
+    while (ref $args[0] eq 'ARRAY') {push @search, shift @args}
     
     # Loop through each search criteria, and if it is a linked object 
     # search, replace it with a translated OpenERP search parameter.
@@ -105,7 +128,7 @@ sub search {
         }
     }
     
-    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search]);
+    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], @args);
 
     if ($objects) {    
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
