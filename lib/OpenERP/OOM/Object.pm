@@ -129,10 +129,11 @@ sub _add_rel2many {
 sub _add_rel2one {
     my ($meta, $name, %options) = @_;
 
+    my $field_name = $options{key};
     $meta->add_attribute(
-        $options{key},
+        $field_name,
         isa    => 'OpenERP::OOM::Type::Many2One',
-        is     => 'ro',
+        is     => 'rw',
         coerce => 1,
     );
     
@@ -140,6 +141,15 @@ sub _add_rel2one {
         $name,
         sub {
             my $self = shift;
+            if(@_)
+            {
+                my $val = shift;
+                # FIXME: JJ: is this too naive?
+                # the retrieve later appears to rely on
+                # id so I think this is probably fine.
+                $self->$field_name($val->id);
+                return unless defined wantarray; # avoid needless retrieval
+            }
             return $self->class->schema->class($options{class})->retrieve($self->{$options{key}});
         },
     );
