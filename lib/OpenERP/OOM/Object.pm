@@ -135,7 +135,6 @@ sub _add_rel2many {
                     # i.e. $obj->rel($obj1, $obj2);
                     @ids = map { $_->id } @args;
                 }
-                my $val = shift;
                 $self->$field_name(\@ids);
                 return unless defined wantarray; # avoid needless retrieval
             }
