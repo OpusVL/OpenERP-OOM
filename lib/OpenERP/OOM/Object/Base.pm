@@ -317,7 +317,7 @@ sub create_related {
             when ('single') {
                 if (my $id = $self->class->schema->link($relation->{class})->create($relation->{args}, $object)) {
                     $self->{$relation->{key}} = $id;
-                    $self->update;
+                    $self->update_single($relation->{key});
                 }
             }
             when ('multiple') {
