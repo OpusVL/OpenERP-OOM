@@ -287,6 +287,28 @@ sub create {
                 delete $object_data->{$name} if $name ne $rel->{key};
             }            
         }
+        if ($rel->{type} eq 'many2many') {
+            warn "many2many";
+            if ($object_data->{$name}) {
+                warn "Found object data";
+                my $val = $object_data->{$name};
+                my @ids;
+                if(ref $val eq 'ARRAY')
+                {
+                    # they passed in an arrayref.
+                    my $objects = $val;
+                    @ids = map { $_->id } @$objects;
+                }
+                else
+                {
+                    # assume it's a single object.
+                    push @ids, $val->id;
+                }
+                warn "Setting key " . $rel->{key} . " to " . (join ',', @ids);
+                $object_data->{$rel->{key}} = [[ 6, 0, \@ids ]];
+                delete $object_data->{$name} if $name ne $rel->{key};
+            }            
+        }
     }
     
     warn "Creating object in class: " . $self->object_class;
