@@ -111,14 +111,35 @@ sub _add_rel2many {
     $meta->add_attribute(
         $options{key},
         isa => 'ArrayRef',
-        is  => 'ro',
+        is  => 'rw',
     );
     
     $meta->add_method(
         $name,
         sub {
-            my $self = shift;
-            return $self->class->schema->class($options{class})->retrieve_list($self->{$options{key}});
+            my ($self, @args) = shift;
+            my $field_name = $options{key};
+            if(@args)
+            {
+                my @ids;
+                if(ref $args[0] eq 'ARRAY')
+                {
+                    # they passed in an arrayref.
+                    # i.e. $obj->rel([ $obj1, $obj2 ]);
+                    my $objects = $args[0];
+                    @ids = map { $_->id } @$objects;
+                }
+                else
+                {
+                    # assume they passed each object in as an arg
+                    # i.e. $obj->rel($obj1, $obj2);
+                    @ids = map { $_->id } @args;
+                }
+                my $val = shift;
+                $self->$field_name(\@ids);
+                return unless defined wantarray; # avoid needless retrieval
+            }
+            return $self->class->schema->class($options{class})->retrieve_list($self->{$field_name});
         },
     );
 }
@@ -144,9 +165,6 @@ sub _add_rel2one {
             if(@_)
             {
                 my $val = shift;
-                # FIXME: JJ: is this too naive?
-                # the retrieve later appears to rely on
-                # id so I think this is probably fine.
                 $self->$field_name($val->id);
                 return unless defined wantarray; # avoid needless retrieval
             }
