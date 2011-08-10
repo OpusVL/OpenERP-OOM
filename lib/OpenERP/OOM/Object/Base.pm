@@ -134,10 +134,6 @@ sub update {
                 when ('many2many') {
                     $object->{$rel->{key}} = [[6,0,$object->{$rel->{key}}]];
                 }
-                when ('many2one') {
-                    # FIXME: Allow these relationships to be updated using the update()
-                    # method as well as using the set_related() method
-                }
             }
         }
     }
@@ -174,17 +170,14 @@ sub update_single {
     
     # Check to see if the property is the key to a many2many relationship
     my $relationships = $self->meta->relationship;
-    # FIXME: I don't think this many2many stuff works so I'm commenting it out for
-    # now.
-    # while (my ($name, $rel) = each %$relationships) {
-    #     # FIXME: this is a honking bug.  Thjis doesn't check if this is the relationship
-    #     # for the property.  It just does this if *any* many2man relationships exist
-    #     # on the object.  In fact if you have multiple I expect the results would be 
-    #     # quite amusing.
-    #     if ($rel->{type} eq 'many2many') {
-    #         $value = [[6,0,$value]];
-    #     }
-    # }
+    my ($key) = grep { $relationships->{$_}->{key} eq $property } keys %$relationships;
+    if($key)
+    {
+        my $rel = $relationships->{$key};
+        if ($rel->{type} eq 'many2many') {
+            $value = [[6,0,$value]];
+        }
+    }
 
     # Force Str parameters to be object type RPC::XML::string
     foreach my $attribute ($self->meta->get_all_attributes) {
