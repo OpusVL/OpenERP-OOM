@@ -201,18 +201,41 @@ sub retrieve {
     my ($self, $id) = @_;
     
     # FIXME - This should probably be in a try/catch block
-    if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) {
-        foreach my $attribute ($self->object_class->meta->get_all_attributes) {
-            if($attribute->type_constraint eq 'DateTime')
-            {
-                my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
-                $object->{$attribute->name} = $parser->parse_datetime($object->{$attribute->name});
-            }
-        }
-        return $self->object_class->new($object);
+    if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) 
+    {
+        return $self->_inflate_object($object);
     }
 }
 
+sub _inflate_object
+{
+    my $self = shift;
+    my $object = shift;
+
+    foreach my $attribute ($self->object_class->meta->get_all_attributes) {
+        if($attribute->type_constraint eq 'DateTime')
+        {
+            my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
+            $object->{$attribute->name} = $parser->parse_datetime($object->{$attribute->name});
+        }
+    }
+    return $self->object_class->new($object);
+}
+
+=head2 default_values
+
+Returns an instance of the object filled in with the default values suggested by OpenERP.
+
+=cut
+sub default_values
+{
+    my $self = shift;
+    # do a default_get
+
+    my @fields = map { $_->name } $self->object_class->meta->get_all_attributes;
+    my $object = $self->schema->client->get_defaults($self->object_class->model, \@fields);
+    return $self->_inflate_object($object);
+}
 
 #-------------------------------------------------------------------------------
 
