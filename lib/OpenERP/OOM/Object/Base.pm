@@ -461,6 +461,8 @@ sub add_related {
 
 =head2 set_related
 
+Like the DBIx::Class set_related.  Sets up a link to a related object.
+
 =cut
 
 sub set_related {
@@ -484,6 +486,28 @@ sub set_related {
         carp "Relation '$relation_name' does not exist!";
     }
 }
+
+=head2 execute_workflow
+
+Performs an exec_workflow in OpenERP.  
+
+    $self->execute_workflow('purchase_confirm');
+
+Is likely to translate to something like this,
+
+    # DEBUG_RPC:rpc.request:('exec_workflow', 'db', 1, '*', ('purchase.order', 'purchase_confirm', 24))
+
+The 24 is the id of the object.
+
+=cut
+
+sub execute_workflow
+{
+    my ($self, $workflow) = @_;
+
+    $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
+}
+
 
 #-------------------------------------------------------------------------------
 
