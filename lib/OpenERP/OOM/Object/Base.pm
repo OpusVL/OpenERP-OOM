@@ -508,6 +508,25 @@ sub execute_workflow
     $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
 }
 
+=head2 get_report
+
+I haven't decided yet what this does but it looks like this:
+
+    # DEBUG_RPC:rpc.request:('report', 'aquarius_openerp_jj_staging', 1, '*', (u'purchase.quotation', [1], {'model': u'purchase.order', 'id': 1, 'report_type': u'pdf'}, {'lang': u'en_GB', 'active_ids': [1], 'tz': False, 'active_model': u'purchase.order', 'section_id': False, 'search_default_draft': 1, 'project_id': False, 'active_id': 1}))
+
+=cut
+
+sub get_report
+{
+    my ($self, $report_id) = @_;
+
+    $self->class->schema->client->report_report($report_id, $self->id,
+            { 
+                model => $self->model, 
+                id => $self->id,
+                report_type => 'pdf',
+            });
+}
 
 #-------------------------------------------------------------------------------
 
