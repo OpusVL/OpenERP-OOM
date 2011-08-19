@@ -510,7 +510,9 @@ sub execute_workflow
 
 =head2 get_report
 
-I haven't decided yet what this does but it looks like this:
+To print a purchase order we need to send a report, then get it, then display it, then print it (and you don't want to know about all the traffic behind the scenes...)
+
+The first step looks like this:
 
     # DEBUG_RPC:rpc.request:('report', 'aquarius_openerp_jj_staging', 1, '*', (u'purchase.quotation', [1], {'model': u'purchase.order', 'id': 1, 'report_type': u'pdf'}, {'lang': u'en_GB', 'active_ids': [1], 'tz': False, 'active_model': u'purchase.order', 'section_id': False, 'search_default_draft': 1, 'project_id': False, 'active_id': 1}))
 
@@ -520,12 +522,22 @@ sub get_report
 {
     my ($self, $report_id) = @_;
 
-    $self->class->schema->client->report_report($report_id, $self->id,
+    my $id = $self->class->schema->client->report_report($report_id, $self->id,
             { 
-                model => $self->model, 
-                id => $self->id,
+                model       => $self->model, 
+                id          => $self->id,
                 report_type => 'pdf',
             });
+
+    # the report_report function returns only a report id, which is all we need to pass to the next function call
+    # but report_report_get don't work first time (?!) so we need to call it recursively until with get an answer
+    my $data;
+    while(!$data)
+    {
+        $data = $self->class->schema->client->report_report_get($id);
+        sleep 1;
+    }
+    return $data;
 }
 
 #-------------------------------------------------------------------------------
