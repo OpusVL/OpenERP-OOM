@@ -132,7 +132,7 @@ sub search {
 
     if ($objects) {    
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
-            if($attribute->type_constraint eq 'DateTime')
+            if($attribute->type_constraint =~ /DateTime/)
             {
                 my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
                 map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
@@ -213,7 +213,7 @@ sub _inflate_object
     my $object = shift;
 
     foreach my $attribute ($self->object_class->meta->get_all_attributes) {
-        if($attribute->type_constraint eq 'DateTime')
+        if($attribute->type_constraint =~ /DateTime/)
         {
             my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
             $object->{$attribute->name} = $parser->parse_datetime($object->{$attribute->name});
@@ -252,7 +252,7 @@ sub retrieve_list {
     
     if (my $objects = $self->schema->client->read($self->object_class->model, $ids)) {
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
-            if($attribute->type_constraint eq 'DateTime')
+            if($attribute->type_constraint =~ /DateTime/)
             {
                 my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
                 map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
