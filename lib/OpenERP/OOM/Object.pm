@@ -138,6 +138,7 @@ sub _add_rel2many {
                 $self->$field_name(\@ids);
                 return unless defined wantarray; # avoid needless retrieval
             }
+            return unless $self->{$field_name};
             return $self->class->schema->class($options{class})->retrieve_list($self->{$field_name});
         },
     );
@@ -167,6 +168,7 @@ sub _add_rel2one {
                 $self->$field_name($val->id);
                 return unless defined wantarray; # avoid needless retrieval
             }
+            return unless $self->{$options{key}};
             return $self->class->schema->class($options{class})->retrieve($self->{$options{key}});
         },
     );
