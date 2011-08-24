@@ -508,6 +508,27 @@ sub execute_workflow
     $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
 }
 
+=head2 execute
+
+Performs an execute in OpenERP.  
+
+    $self->execute('action_process');
+
+Is likely to translate to something like this,
+
+    # DEBUG_RPC:rpc.request:('execute', 'gooner', 1, '*', ('stock.picking', 'action_process', [26], {'lang': 'en_GB', 'search_default_available': 1, 'active_ids': [316], 'tz': False, 'active_model': 'ir.ui.menu', 'section_id': False, 'contact_display': 'partner_address', 'project_id': False, 'active_id': 316}))
+
+The 26 is the id of the object.
+
+=cut
+
+sub execute
+{
+    my ($self, $action) = @_;
+
+    $self->class->schema->client->object_execute($action, $self->model, $self->id);
+}
+
 =head2 get_report
 
 To print a purchase order we need to send a report, then get it, then display it, then print it (and you don't want to know about all the traffic behind the scenes...)
