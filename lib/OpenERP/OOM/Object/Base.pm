@@ -524,9 +524,9 @@ The 26 is the id of the object.
 
 sub execute
 {
-    my ($self, $action) = @_;
+    my ($self, $action, $context) = @_;
 
-    $self->class->schema->client->object_execute($action, $self->model, [$self->id]);
+    return $self->class->schema->client->object_execute($action, $self->model, [$self->id], $context);
 }
 
 =head2 get_report
