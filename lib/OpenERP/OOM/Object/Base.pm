@@ -526,7 +526,7 @@ sub execute
 {
     my ($self, $action) = @_;
 
-    $self->class->schema->client->object_execute($action, $self->model, $self->id);
+    $self->class->schema->client->object_execute($action, $self->model, [$self->id]);
 }
 
 =head2 get_report
