@@ -265,6 +265,54 @@ sub retrieve_list {
 
 #-------------------------------------------------------------------------------
 
+sub _collapse_data_to_ids
+{
+    my ($self, $object_data) = @_;
+
+    my $relationships = $self->object_class->meta->relationship;
+    while (my ($name, $rel) = each %$relationships) {
+        if ($rel->{type} eq 'one2many') {
+            if ($object_data->{$name}) {
+                $object_data->{$rel->{key}} = $object_data->{$name}->id;
+                delete $object_data->{$name} if $name ne $rel->{key};
+            }
+        }
+        
+        if ($rel->{type} eq 'many2one') {
+            if ($object_data->{$name}) {
+                $object_data->{$rel->{key}} = $object_data->{$name}->id;
+                delete $object_data->{$name} if $name ne $rel->{key};
+            }            
+        }
+        if ($rel->{type} eq 'many2many') {
+            if ($object_data->{$name}) {
+                my $val = $object_data->{$name};
+                my @ids;
+                if(ref $val eq 'ARRAY')
+                {
+                    # they passed in an arrayref.
+                    my $objects = $val;
+                    @ids = map { $_->id } @$objects;
+                }
+                else
+                {
+                    # assume it's a single object.
+                    push @ids, $val->id;
+                }
+                $object_data->{$rel->{key}} = [[ 6, 0, \@ids ]];
+                delete $object_data->{$name} if $name ne $rel->{key};
+            }            
+        }
+    }
+    # Force Str parameters to be object type RPC::XML::string
+    foreach my $attribute ($self->object_class->meta->get_all_attributes) {
+        if (exists $object_data->{$attribute->name}) {
+            $object_data->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object_data->{$attribute->name});
+        }
+    }
+    return $object_data;
+}
+
 =head2 create
 
 Creates a new instance of an object in OpenERP.
@@ -286,65 +334,13 @@ sub create {
     carp "Create called with initial object data: ";
     warn Dumper $object_data;
     
-    # Check for relationships in the object data
-    warn "Looking for relationships in ".$self->object_class;
-    my $relationships = $self->object_class->meta->relationship;
-    while (my ($name, $rel) = each %$relationships) {
-        warn "Testing for relationship $name";
-        if ($rel->{type} eq 'one2many') {
-            warn "one2many";
-            if ($object_data->{$name}) {
-                warn "Found object data";
-                warn "Setting key " . $rel->{key} . " to " . $object_data->{$name}->id;
-                $object_data->{$rel->{key}} = $object_data->{$name}->id;
-                delete $object_data->{$name} if $name ne $rel->{key};
-            }
-        }
-        
-        if ($rel->{type} eq 'many2one') {
-            warn "many2one";
-            if ($object_data->{$name}) {
-                warn "Found object data";
-                warn "Setting key " . $rel->{key} . " to " . $object_data->{$name}->id;
-                $object_data->{$rel->{key}} = $object_data->{$name}->id;
-                delete $object_data->{$name} if $name ne $rel->{key};
-            }            
-        }
-        if ($rel->{type} eq 'many2many') {
-            warn "many2many";
-            if ($object_data->{$name}) {
-                warn "Found object data";
-                my $val = $object_data->{$name};
-                my @ids;
-                if(ref $val eq 'ARRAY')
-                {
-                    # they passed in an arrayref.
-                    my $objects = $val;
-                    @ids = map { $_->id } @$objects;
-                }
-                else
-                {
-                    # assume it's a single object.
-                    push @ids, $val->id;
-                }
-                warn "Setting key " . $rel->{key} . " to " . (join ',', @ids);
-                $object_data->{$rel->{key}} = [[ 6, 0, \@ids ]];
-                delete $object_data->{$name} if $name ne $rel->{key};
-            }            
-        }
-    }
-    
-    warn "Creating object in class: " . $self->object_class;
-    
-    # Force Str parameters to be object type RPC::XML::string
-    foreach my $attribute ($self->object_class->meta->get_all_attributes) {
-        if (exists $object_data->{$attribute->name}) {
-            $object_data->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object_data->{$attribute->name});
-        }
-    }
+    $object_data = $self->_collapse_data_to_ids($object_data);
+
+    warn 'To';
     warn Dumper $object_data;
     
-    if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) {
+    if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) 
+    {
         return $self->retrieve($id);
     }
 }
