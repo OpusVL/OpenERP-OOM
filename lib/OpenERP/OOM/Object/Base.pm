@@ -244,6 +244,38 @@ sub print {
 
 #-------------------------------------------------------------------------------
 
+=head2 real_create_related
+
+This actually does the create related via OpenERP.
+
+I'm not sure in what scenarios you should use it versus the scenario's you 
+shouldn't.  Suck it and see.
+
+It will create calls like this,
+
+# DEBUG_RPC:rpc.request:('execute', 'db', 1, '*', ('stock.partial.picking', 'write', [1], {'product_moves_out': [(0, 0, {'prodlot_id': False, 'product_id': 16, 'product_uom': 1, 'quantity': 10.0})]}, {'lang': 'en_GB', 'search_default_available': 1, 'project_id': False, 'tz': False, '__last_update': {'stock.partial.picking,1': False}, 'active_model': 'ir.ui.menu', 'section_id': False, 'contact_display': 'partner_address', 'active_ids': [3], 'active_id': 316}))
+
+Note that it will not return the object created.
+
+=cut
+
+sub real_create_related
+{
+    my $self = shift;
+    my $relation_name = shift;
+    my $object = shift;
+
+    # find relationship class
+    my $class = $self->relationship_class($relation_name);
+    my $data = $class->_collapse_data_to_ids($object);
+
+    $self->class->schema->client->update($self->model, $self->id, {$relation_name => [[ 0, 0, $data ]]});
+
+    # FIXME: need to check what happens to existing data
+    # how do you add multiple objects ?
+    return;
+}
+
 =head2 create_related
 
 Creates a related or linked object.
@@ -354,6 +386,28 @@ sub find_related {
     {
         return $results[0];
     }
+}
+
+=head2 relationship_class
+
+Returns the OpenERP::OOM::Class object for the relationship passed in.
+
+Obviously this only works for the OpenERP relationships.  It will croak
+if you ask for a relationship to a DBIC object.
+
+=cut
+
+sub relationship_class
+{
+    my ($self, $relationship) = @_;
+    if (my $relation = $self->meta->relationship->{$relationship}) {
+        my $type = $relation->{type};
+        croak 'Cannot get a class for a DBIC relationship' if $type eq 'single' 
+                                                            || $type eq 'multiple';
+        my $class = $relation->{class};
+        return $self->class->schema->class($class);
+    }
+    croak "Unable to find relation $relationship";
 }
 
 =head2 search_related
