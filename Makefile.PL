@@ -12,6 +12,7 @@ requires 'Moose::Role';
 requires 'Moose::Util::MetaRole';
 requires 'Moose::Util::TypeConstraints';
 requires 'MooseX::Role::XMLRPC::Client';
+requires 'OpenERP::XMLRPC::Simple';
 requires 'List::MoreUtils';
 requires 'RPC::XML';
 
