@@ -165,7 +165,7 @@ sub _add_rel2one {
             if(@_)
             {
                 my $val = shift;
-                $self->$field_name($val->id);
+                $self->$field_name($val ? $val->id : undef);
                 return unless defined wantarray; # avoid needless retrieval
             }
             return unless $self->{$options{key}};
