@@ -525,11 +525,11 @@ sub set_related {
     if (my $relation = $self->meta->relationship->{$relation_name}) {
         given ($relation->{type}) {
             when ('many2one') {
-                $self->{$relation->{key}} = $object->id;
+                $self->{$relation->{key}} = $object ? $object->id : undef;
                 $self->update_single($relation->{key});
             }
             when ('many2many') {
-                $self->{$relation->{key}} = [$object->id];
+                $self->{$relation->{key}} = $object ? [ $object->id ] : [];
                 $self->update_single($relation->{key});
             }
             default {
