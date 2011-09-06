@@ -529,7 +529,19 @@ sub set_related {
                 $self->update_single($relation->{key});
             }
             when ('many2many') {
-                $self->{$relation->{key}} = $object ? [ $object->id ] : [];
+                my @array;
+                if($object)
+                {
+                    if(ref $object eq 'ARRAY')
+                    {
+                        @array = map { $_->id } @$object;
+                    }
+                    else 
+                    {
+                        push @array, $object->id;
+                    }
+                }
+                $self->{$relation->{key}} = \@array;
                 $self->update_single($relation->{key});
             }
             default {
