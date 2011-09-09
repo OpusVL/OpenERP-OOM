@@ -15,8 +15,10 @@ inc/Module/Install/WriteAll.pm
 lib/OpenERP/OOM.pm
 lib/OpenERP/OOM/Class.pm
 lib/OpenERP/OOM/Class/Base.pm
+lib/OpenERP/OOM/DynamicUtils.pm
 lib/OpenERP/OOM/Link.pm
 lib/OpenERP/OOM/Link/DBIC.pm
+lib/OpenERP/OOM/Link/Provider.pm
 lib/OpenERP/OOM/Meta/Class/Trait/HasLink.pm
 lib/OpenERP/OOM/Meta/Class/Trait/HasRelationship.pm
 lib/OpenERP/OOM/Object.pm
@@ -27,6 +29,7 @@ MANIFEST
 MANIFEST.SKIP
 META.yml
 README
+scripts/class_generate.pl
 t/00-load.t
 t/boilerplate.t
 t/manifest.t
