@@ -117,7 +117,7 @@ sub _add_rel2many {
     $meta->add_method(
         $name,
         sub {
-            my ($self, @args) = shift;
+            my ($self, @args) = @_;
             my $field_name = $options{key};
             if(@args)
             {
@@ -127,13 +127,13 @@ sub _add_rel2many {
                     # they passed in an arrayref.
                     # i.e. $obj->rel([ $obj1, $obj2 ]);
                     my $objects = $args[0];
-                    @ids = map { $_->id } @$objects;
+                    @ids = map { _id($_) } @$objects;
                 }
                 else
                 {
                     # assume they passed each object in as an arg
                     # i.e. $obj->rel($obj1, $obj2);
-                    @ids = map { $_->id } @args;
+                    @ids = map { _id($_) } @args;
                 }
                 $self->$field_name(\@ids);
                 return unless defined wantarray; # avoid needless retrieval
@@ -142,6 +142,15 @@ sub _add_rel2many {
             return $self->class->schema->class($options{class})->retrieve_list($self->{$field_name});
         },
     );
+}
+
+
+# this method means the user can simply pass in id's as well as 
+# objects.
+sub _id
+{
+    my $var = shift;
+    return ref $var ? $var->id : $var;
 }
 
 
@@ -165,7 +174,7 @@ sub _add_rel2one {
             if(@_)
             {
                 my $val = shift;
-                $self->$field_name($val ? $val->id : undef);
+                $self->$field_name($val ? _id($val) : undef);
                 return unless defined wantarray; # avoid needless retrieval
             }
             return unless $self->{$options{key}};
