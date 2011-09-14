@@ -273,14 +273,14 @@ sub _collapse_data_to_ids
     while (my ($name, $rel) = each %$relationships) {
         if ($rel->{type} eq 'one2many') {
             if ($object_data->{$name}) {
-                $object_data->{$rel->{key}} = $object_data->{$name}->id;
+                $object_data->{$rel->{key}} = _id($object_data->{$name});
                 delete $object_data->{$name} if $name ne $rel->{key};
             }
         }
         
         if ($rel->{type} eq 'many2one') {
             if ($object_data->{$name}) {
-                $object_data->{$rel->{key}} = $object_data->{$name}->id;
+                $object_data->{$rel->{key}} = _id($object_data->{$name});
                 delete $object_data->{$name} if $name ne $rel->{key};
             }            
         }
@@ -292,12 +292,12 @@ sub _collapse_data_to_ids
                 {
                     # they passed in an arrayref.
                     my $objects = $val;
-                    @ids = map { $_->id } @$objects;
+                    @ids = map { _id($_) } @$objects;
                 }
                 else
                 {
                     # assume it's a single object.
-                    push @ids, $val->id;
+                    push @ids, _id($val);
                 }
                 $object_data->{$rel->{key}} = [[ 6, 0, \@ids ]];
                 delete $object_data->{$name} if $name ne $rel->{key};
@@ -311,6 +311,12 @@ sub _collapse_data_to_ids
         }
     }
     return $object_data;
+}
+
+sub _id
+{
+    my $val = shift;
+    return ref $val ? $val->id : $val;
 }
 
 =head2 create
