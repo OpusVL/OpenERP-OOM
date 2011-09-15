@@ -358,6 +358,12 @@ sub create_related {
     }
 }
 
+sub _id
+{
+    my $val = shift;
+    return ref $val ? $val->id : $val;
+}
+
 =head2 find_related
 
 Finds a property related to the current object.
@@ -496,7 +502,7 @@ sub add_related {
                 # FIXME - is this the same process as adding a many2many relationship?
             }
             when ('many2many') {
-                push @{$self->{$relation->{key}}}, $object->id;
+                push @{$self->{$relation->{key}}}, _id($object);
                 $self->{$relation->{key}} = [uniq @{$self->{$relation->{key}}}];
                 $self->update_single($relation->{key});
             }
@@ -525,7 +531,7 @@ sub set_related {
     if (my $relation = $self->meta->relationship->{$relation_name}) {
         given ($relation->{type}) {
             when ('many2one') {
-                $self->{$relation->{key}} = $object ? $object->id : undef;
+                $self->{$relation->{key}} = $object ? _id($object) : undef;
                 $self->update_single($relation->{key});
             }
             when ('many2many') {
@@ -534,11 +540,11 @@ sub set_related {
                 {
                     if(ref $object eq 'ARRAY')
                     {
-                        @array = map { $_->id } @$object;
+                        @array = map { _id($_) } @$object;
                     }
                     else 
                     {
-                        push @array, $object->id;
+                        push @array, _id($object);
                     }
                 }
                 $self->{$relation->{key}} = \@array;
