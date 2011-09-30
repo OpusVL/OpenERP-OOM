@@ -204,7 +204,7 @@ sub retrieve {
     # FIXME - This should probably be in a try/catch block
     if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) 
     {
-        return $self->_inflate_object($self->object_class, $object);
+        return $self->_inflate_object($self->object, $object);
     }
 }
 
@@ -236,7 +236,8 @@ sub default_values
 
     my @fields = map { $_->name } $self->object_class->meta->get_all_attributes;
     my $object = $self->schema->client->get_defaults($self->object_class->model, \@fields);
-    my $class = MooseX::NotRequired::make_optional_subclass($self->object);
+    my $class = $self->object;
+    #my $class = MooseX::NotRequired::make_optional_subclass($self->object);
     return $self->_inflate_object($class, $object);
 }
 
