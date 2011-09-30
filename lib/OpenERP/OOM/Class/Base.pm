@@ -236,8 +236,7 @@ sub default_values
 
     my @fields = map { $_->name } $self->object_class->meta->get_all_attributes;
     my $object = $self->schema->client->get_defaults($self->object_class->model, \@fields);
-    my $class = $self->object;
-    #my $class = MooseX::NotRequired::make_optional_subclass($self->object);
+    my $class = MooseX::NotRequired::make_optional_subclass($self->object);
     return $self->_inflate_object($class, $object);
 }
 
