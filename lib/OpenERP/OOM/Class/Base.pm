@@ -7,6 +7,7 @@ use Moose;
 use RPC::XML;
 use DateTime;
 use DateTime::Format::Strptime;
+use MooseX::NotRequired;
 
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
@@ -203,13 +204,14 @@ sub retrieve {
     # FIXME - This should probably be in a try/catch block
     if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) 
     {
-        return $self->_inflate_object($object);
+        return $self->_inflate_object($self->object_class, $object);
     }
 }
 
 sub _inflate_object
 {
     my $self = shift;
+    my $object_class = shift;
     my $object = shift;
 
     foreach my $attribute ($self->object_class->meta->get_all_attributes) {
@@ -219,7 +221,7 @@ sub _inflate_object
             $object->{$attribute->name} = $parser->parse_datetime($object->{$attribute->name});
         }
     }
-    return $self->object_class->new($object);
+    return $object_class->new($object);
 }
 
 =head2 default_values
@@ -234,7 +236,8 @@ sub default_values
 
     my @fields = map { $_->name } $self->object_class->meta->get_all_attributes;
     my $object = $self->schema->client->get_defaults($self->object_class->model, \@fields);
-    return $self->_inflate_object($object);
+    my $class = MooseX::NotRequired::make_optional_subclass($self->object);
+    return $self->_inflate_object($class, $object);
 }
 
 #-------------------------------------------------------------------------------

@@ -12,10 +12,12 @@ requires 'Moose::Role';
 requires 'Moose::Util::MetaRole';
 requires 'Moose::Util::TypeConstraints';
 requires 'MooseX::Role::XMLRPC::Client';
-requires 'OpenERP::XMLRPC::Simple';
-requires 'OpusVL::MooseX::TrackDirty';
 requires 'List::MoreUtils';
 requires 'RPC::XML';
+
+requires 'OpenERP::XMLRPC::Simple';
+requires 'OpusVL::MooseX::TrackDirty';
+requires 'MooseX::NotRequired';
 
 auto_install;
 
