@@ -100,10 +100,20 @@ An optional 'search context' can also be provided at the end of the query list, 
 Supplying a context further restricts the search, for example to narrow down a
 'stock by location' query to 'stock of a specific product by location'.
 
+Following the search context, an arrayref of options can be given to return a
+paged set of results:
+
+    {
+        limit  => 10,    # Return max 10 results
+        offset => 20,    # Start at result 20
+    }
+
 =cut
 
 sub search {
     my ($self, @args) = @_;
+    use Data::Dumper;
+    warn "Initial search args: " . Dumper(\@args);
     
     my @search;
     while (ref $args[0] eq 'ARRAY') {push @search, shift @args}
@@ -129,7 +139,12 @@ sub search {
         }
     }
     
-    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], @args);
+    my $context = shift @args;
+    my $options = shift @args;
+    $options = {} unless $options;
+    warn "Search context: " . Dumper($context);
+    warn "Search options: " . Dumper($options);
+    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
 
     if ($objects) {    
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
