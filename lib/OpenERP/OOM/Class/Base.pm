@@ -110,7 +110,7 @@ paged set of results:
 
 =cut
 
-sub search {
+sub raw_search {
     my ($self, @args) = @_;
     use Data::Dumper;
     warn "Initial search args: " . Dumper(\@args);
@@ -131,7 +131,7 @@ sub search {
                     warn "Adding to OpenERP search: " . $link->{key} . " IN " . join(', ', @results);
                     $criteria = [$link->{key}, 'in', \@results];
                 } else {
-                    return ();  # No results found, so no point searching in OpenERP
+                    return;  # No results found, so no point searching in OpenERP
                 }
             } else {
                 carp "Cannot search for link type " . $link->{class};
@@ -154,6 +154,17 @@ sub search {
                 map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
             }
         }
+        return $objects;
+    } else {
+        return undef;
+    }
+}
+
+sub search
+{
+    my $self = shift;
+    my $objects = $self->raw_search(@_);
+    if($objects) {
         return map {$self->object_class->new($_)} @$objects;
     } else {
         return wantarray ? () : undef;

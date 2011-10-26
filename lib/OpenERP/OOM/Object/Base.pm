@@ -356,6 +356,9 @@ sub create_related {
             }
         }
     }
+    else {
+        croak "Can not find relation $relation_name";
+    }
 }
 
 sub _id
