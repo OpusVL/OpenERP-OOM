@@ -60,7 +60,7 @@ sub BUILD {
                         unless ($obj->{"_$name"}) {
                             # FIXME: If $obj->{"_$name"} is undefined, we have a data integrity problem.
                             # Either the linked data is missing, or the key in the OpenERP object is missing.
-                            die "Error linking to OpenERP object" . $obj->id;
+                            die "Error linking to OpenERP object " . $obj->id . " of class " . ref($obj);
                         }
                         
                         $obj->{"_$name"}->meta->make_mutable;
