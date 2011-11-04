@@ -302,14 +302,14 @@ sub _collapse_data_to_ids
     while (my ($name, $rel) = each %$relationships) {
         if ($rel->{type} eq 'one2many') {
             if ($object_data->{$name}) {
-                $object_data->{$rel->{key}} = $self->_id($object_data->{$name});
+                $object_data->{$rel->{key}} = $self->_id($rel, $object_data->{$name});
                 delete $object_data->{$name} if $name ne $rel->{key};
             }
         }
         
         if ($rel->{type} eq 'many2one') {
             if ($object_data->{$name}) {
-                $object_data->{$rel->{key}} = $self->_id($object_data->{$name});
+                $object_data->{$rel->{key}} = $self->_id($rel, $object_data->{$name});
                 delete $object_data->{$name} if $name ne $rel->{key};
             }            
         }
@@ -321,12 +321,12 @@ sub _collapse_data_to_ids
                 {
                     # they passed in an arrayref.
                     my $objects = $val;
-                    @ids = map { $self->_id($_) } @$objects;
+                    @ids = map { $self->_id($rel, $_) } @$objects;
                 }
                 else
                 {
                     # assume it's a single object.
-                    push @ids, $self->_id($val);
+                    push @ids, $self->_id($rel, $val);
                 }
                 $object_data->{$rel->{key}} = [[ 6, 0, \@ids ]];
                 delete $object_data->{$name} if $name ne $rel->{key};
@@ -345,6 +345,7 @@ sub _collapse_data_to_ids
 sub _id
 {
     my $self = shift;
+    my $rel = shift;
     my $val = shift;
     my $ref = ref $val;
     if($ref)
@@ -353,12 +354,14 @@ sub _id
         # that corresponds to the relation we're delving into.
         if($ref eq 'HASH')
         {
-            return [[ 0, 0, $self->_collapse_data_to_ids($val) ]];
+            my $class = $self->schema->class($rel->{class});
+            return [[ 0, 0, $class->_collapse_data_to_ids($val) ]];
         } 
         elsif($ref eq 'ARRAY') 
         {
             # this should allow us to do child objects too.
-            my @expanded = map { $self->_collapse_data_to_ids($_) } @$val;
+            my $class = $self->schema->class($rel->{class});
+            my @expanded = map { $class->_collapse_data_to_ids($_) } @$val;
             return [[ 0, 0, \@expanded ]];
         }
         else
