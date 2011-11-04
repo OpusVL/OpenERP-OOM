@@ -345,7 +345,21 @@ sub _collapse_data_to_ids
 sub _id
 {
     my $val = shift;
-    return ref $val ? $val->id : $val;
+    my $ref = ref $val;
+    if($ref)
+    {
+        if($ref eq 'HASH' || $ref eq 'ARRAY') 
+        {
+            # this should allow us to do child objects too.
+            return [[ 0, 0, $val ]];
+        }
+        else
+        {
+            $DB::single = 1;
+            return $val->id;
+        }
+    }
+    return $val;
 }
 
 =head2 create
