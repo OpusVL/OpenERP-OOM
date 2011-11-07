@@ -361,8 +361,8 @@ sub _id
         {
             # this should allow us to do child objects too.
             my $class = $self->schema->class($rel->{class});
-            my @expanded = map { $class->_collapse_data_to_ids($_) } @$val;
-            return [[ 0, 0, \@expanded ]];
+            my @expanded = map { [ 0, 0, $class->_collapse_data_to_ids($_) ] } @$val;
+            return \@expanded;
         }
         else
         {
