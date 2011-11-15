@@ -63,11 +63,14 @@ sub BUILD {
                             die "Error linking to OpenERP object " . $obj->id . " of class " . ref($obj);
                         }
                         
-                        $obj->{"_$name"}->meta->make_mutable;
-                        $obj->{"_$name"}->meta->add_method(
-                            '_source',
-                            sub { return $obj }
-                        );
+                        unless ($obj->{"_$name"}->can('_source')) {
+                            warn "Adding _source method to related object $name";
+                            $obj->{"_$name"}->meta->make_mutable;
+                            $obj->{"_$name"}->meta->add_method(
+                                '_source',
+                                sub { return $obj }
+                            );
+                        }
                         
                         return $obj->{"_$name"};
                     }
