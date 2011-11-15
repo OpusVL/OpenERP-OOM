@@ -187,10 +187,12 @@ Will return C<undef> if no objects matching the query are found.
 sub find {
     my $self = shift;
     
-    my $ids = $self->schema->client->search($self->object_class->model,[@_]);
+    #my $ids = $self->schema->client->search($self->object_class->model,[@_]);
+    my $ids = $self->raw_search(@_);
     
     if ($ids->[0]) {
-        return $self->retrieve($ids->[0]);
+        #return $self->retrieve($ids->[0]);
+        return $self->object_class->new($ids->[0]);
     }
 }
 
