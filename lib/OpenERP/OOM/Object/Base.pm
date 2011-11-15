@@ -5,6 +5,7 @@ use Carp;
 use Data::Dumper;
 use List::MoreUtils qw/uniq/;
 use Moose;
+use Try::Tiny;
 
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
@@ -349,10 +350,16 @@ sub create_related {
     } elsif ($relation = $self->meta->link->{$relation_name}) {
         given ($relation->{type}) {
             when ('single') {
-                if (my $id = $self->class->schema->link($relation->{class})->create($relation->{args}, $object)) {
+                warn "Creating linked object";
+                try {
+                    my $id = $self->class->schema->link($relation->{class})->create($relation->{args}, $object);
+                    warn "Linked object created with key $id";
                     $self->{$relation->{key}} = $id;
                     $self->update_single($relation->{key});
-                }
+                    undef $self->{"_$relation_name"};
+                } catch {
+                    die "Error creating linked object: $_";
+                };
             }
             when ('multiple') {
                 say "create_linked multiple";
