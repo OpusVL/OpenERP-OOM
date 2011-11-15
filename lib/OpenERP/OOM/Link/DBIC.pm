@@ -2,6 +2,7 @@ package OpenERP::OOM::Link::DBIC;
 
 use 5.010;
 use Moose;
+use Try::Tiny;
 extends 'OpenERP::OOM::Link';
 with 'OpenERP::OOM::DynamicUtils';
 
@@ -25,9 +26,13 @@ sub _build_dbic_schema {
 sub create {
     my ($self, $args, $data) = @_;
     
-    if (my $object = $self->dbic_schema->resultset($args->{class})->create($data)) {
+    try {
+        my $object = $self->dbic_schema->resultset($args->{class})->create($data);
+        warn "Created linked object with ID " . $object->id;
         return $object->id;
-    }
+    } catch {
+        die "Could not create linked object: $_";
+    };
 }
 
 
