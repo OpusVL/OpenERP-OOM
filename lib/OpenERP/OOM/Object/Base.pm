@@ -64,14 +64,20 @@ sub BUILD {
                             die "Error linking to OpenERP object " . $obj->id . " of class " . ref($obj);
                         }
                         
-                        unless ($obj->{"_$name"}->can('_source')) {
-                            warn "Adding _source method to related object $name";
+                        # FIXME: At the moment the _source() method is created every time the linked
+                        # object is accessed, which is sub-optimal to say the least.
+                        #
+                        # However, when adding the 'unless' line it fails so don't try and
+                        # optimise it that way again JJ!
+                        
+                        #unless ($obj->{"_$name"}->can('_source')) {
+                            #warn "Adding _source method to related object $name";
                             $obj->{"_$name"}->meta->make_mutable;
                             $obj->{"_$name"}->meta->add_method(
                                 '_source',
                                 sub { return $obj }
                             );
-                        }
+                        #}
                         
                         return $obj->{"_$name"};
                     }
