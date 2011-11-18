@@ -364,7 +364,7 @@ sub create_related {
                     $self->update_single($relation->{key});
                     undef $self->{"_$relation_name"};
                 } catch {
-                    die "Error creating linked object: $_";
+                    die "Error creating linked object: $_[0]";
                 };
             }
             when ('multiple') {
