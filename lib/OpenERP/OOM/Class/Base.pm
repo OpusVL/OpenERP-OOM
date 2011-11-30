@@ -260,10 +260,11 @@ Returns an instance of the object filled in with the default values suggested by
 sub default_values
 {
     my $self = shift;
+    my $context = shift;
     # do a default_get
 
     my @fields = map { $_->name } $self->object_class->meta->get_all_attributes;
-    my $object = $self->schema->client->get_defaults($self->object_class->model, \@fields);
+    my $object = $self->schema->client->get_defaults($self->object_class->model, \@fields, $context);
     my $class = MooseX::NotRequired::make_optional_subclass($self->object);
     return $self->_inflate_object($class, $object);
 }
