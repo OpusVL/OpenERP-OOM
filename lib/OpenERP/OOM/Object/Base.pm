@@ -304,9 +304,9 @@ Creates a related or linked object.
 sub create_related {
     my ($self, $relation_name, $object) = @_;
     
-    warn "Creating related object $relation_name";
-    warn "with initial data:";
-    warn Dumper $object;
+    ### Creating related object $relation_name
+    ### with initial data:
+    ### $object
     
     if (my $relation = $self->meta->relationship->{$relation_name}) {
         given ($relation->{type}) {
@@ -331,7 +331,7 @@ sub create_related {
                     if ($far_end_relation) {
                         my $foreign_key = $related_meta->{$far_end_relation}->{key};
                         
-                        warn "Far end relation exists";
+                        ### Far end relation exists
                         $self->class->schema->class($relation->{class})->create({
                             %$object,
                             $foreign_key => $self->id,
@@ -360,10 +360,10 @@ sub create_related {
     } elsif ($relation = $self->meta->link->{$relation_name}) {
         given ($relation->{type}) {
             when ('single') {
-                warn "Creating linked object";
+                ### Creating linked object
                 try {
                     my $id = $self->class->schema->link($relation->{class})->create($relation->{args}, $object);
-                    warn "Linked object created with key $id";
+                    ### Linked object created with key $id
                     $self->{$relation->{key}} = $id;
                     $self->update_single($relation->{key});
                     undef $self->{"_$relation_name"};
