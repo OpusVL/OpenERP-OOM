@@ -113,7 +113,7 @@ paged set of results:
 sub raw_search {
     my ($self, @args) = @_;
     use Data::Dumper;
-    warn "Initial search args: " . Dumper(\@args);
+    ### Initial search args: @args
     
     my @search;
     while (ref $args[0] eq 'ARRAY') {push @search, shift @args}
@@ -128,7 +128,10 @@ sub raw_search {
                 my @results = $self->schema->link($link->{class})->search($link->{args}, @$criteria[1 .. @$criteria-1]);
                 
                 if (@results) {
-                    warn "Adding to OpenERP search: " . $link->{key} . " IN " . join(', ', @results);
+                    ### Adding to OpenERP search: 
+                    ### $link->{key} 
+                    ### IN 
+                    ### join(', ', @results)
                     $criteria = [$link->{key}, 'in', \@results];
                 } else {
                     return;  # No results found, so no point searching in OpenERP
@@ -142,8 +145,8 @@ sub raw_search {
     my $context = shift @args;
     my $options = shift @args;
     $options = {} unless $options;
-    warn "Search context: " . Dumper($context);
-    warn "Search options: " . Dumper($options);
+    ### Search context: $context
+    ### Search options: $options
     my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
 
     if ($objects) {    
@@ -393,13 +396,13 @@ Returns the new object or C<undef> if it could not be created.
 sub create {
     my ($self, $object_data) = @_;
 
-    carp "Create called with initial object data: ";
-    warn Dumper $object_data;
+    ### Create called with initial object data: 
+    ### $object_data;
     
     $object_data = $self->_collapse_data_to_ids($object_data);
 
-    warn 'To';
-    warn Dumper $object_data;
+    ### To
+    ### $object_data;
     
     if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) 
     {

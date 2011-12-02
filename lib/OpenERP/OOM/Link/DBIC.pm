@@ -35,7 +35,7 @@ sub create {
             $self->dbic_schema->resultset($args->{class})->result_class->meta->remove_method('_source');
         }
         my $object = $self->dbic_schema->resultset($args->{class})->create($data);
-        warn "Created linked object with ID " . $object->id;
+        ### Created linked object with ID $object->id
         return $object->id;
     } catch {
         die "Could not create linked object: $_";
