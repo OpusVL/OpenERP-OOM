@@ -174,6 +174,35 @@ sub search
     }
 }
 
+=head2 is_not_null
+
+Returns search criteria for a not null search.  i.e. equivalend to $field is not null in SQL.
+
+    $self->search($self->is_not_null('x_department'), [ 'other_field', '=', 3 ]);
+
+=cut
+
+sub is_not_null
+{
+    my $self = shift;
+    my $field = shift;
+    return [ $field, '!=', RPC::XML::boolean->new(0) ];
+}
+
+=head2 is_null
+
+Returns search criteria for an is null search.  i.e. equivalend to $field is null in SQL.
+
+    $self->search($self->is_null('x_department'), [ 'other_field', '=', 3 ]);
+
+=cut
+
+sub is_null
+{
+    my $self = shift;
+    my $field = shift;
+    return [ $field, '=', RPC::XML::boolean->new(0) ];
+}
 
 #-------------------------------------------------------------------------------
 
