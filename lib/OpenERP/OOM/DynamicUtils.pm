@@ -36,7 +36,7 @@ sub prepare_attribute_for_send
     my $value = shift;
 
     return RPC::XML::string->new($value) if $type =~ /Str/i;
-    return $value->ymd if $type eq 'DateTime' && $value && $value->can('ymd');
+    return $value->ymd if $type =~ qr'DateTime'i && $value && $value->can('ymd');
     
     return $value;
 }
