@@ -116,28 +116,30 @@ sub raw_search {
     ### Initial search args: @args
     
     my @search;
-    while (ref $args[0] eq 'ARRAY') {push @search, shift @args}
+    while (@args && ref $args[0] ne 'HASH') {push @search, shift @args}
     
     # Loop through each search criteria, and if it is a linked object 
     # search, replace it with a translated OpenERP search parameter.
     foreach my $criteria (@search) {
-        my $search_field = $criteria->[0];
-        
-        if (my $link = $self->object_class->meta->link->{$search_field}) {
-            if ($self->schema->link($link->{class})->can('search')) {
-                my @results = $self->schema->link($link->{class})->search($link->{args}, @$criteria[1 .. @$criteria-1]);
-                
-                if (@results) {
-                    ### Adding to OpenERP search: 
-                    ### $link->{key} 
-                    ### IN 
-                    ### join(', ', @results)
-                    $criteria = [$link->{key}, 'in', \@results];
+        if(ref $criteria eq 'ARRAY') {
+            my $search_field = $criteria->[0];
+
+            if (my $link = $self->object_class->meta->link->{$search_field}) {
+                if ($self->schema->link($link->{class})->can('search')) {
+                    my @results = $self->schema->link($link->{class})->search($link->{args}, @$criteria[1 .. @$criteria-1]);
+
+                    if (@results) {
+                        ### Adding to OpenERP search: 
+                        ### $link->{key} 
+                        ### IN 
+                        ### join(', ', @results)
+                        $criteria = [$link->{key}, 'in', \@results];
+                    } else {
+                        return;  # No results found, so no point searching in OpenERP
+                    }
                 } else {
-                    return;  # No results found, so no point searching in OpenERP
+                    carp "Cannot search for link type " . $link->{class};
                 }
-            } else {
-                carp "Cannot search for link type " . $link->{class};
             }
         }
     }
@@ -145,6 +147,7 @@ sub raw_search {
     my $context = shift @args;
     my $options = shift @args;
     $options = {} unless $options;
+    ### Search: @search
     ### Search context: $context
     ### Search options: $options
     my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
