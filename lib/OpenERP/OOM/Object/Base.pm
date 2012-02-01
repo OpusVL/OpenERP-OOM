@@ -304,7 +304,8 @@ Creates a related or linked object.
 sub create_related {
     my ($self, $relation_name, $object) = @_;
     
-    ### Creating related object $relation_name
+    ### Creating related object 
+    ### $relation_name
     ### with initial data:
     ### $object
     
