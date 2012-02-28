@@ -192,6 +192,8 @@ sub is_not_null
     return [ $field, '!=', RPC::XML::boolean->new(0) ];
 }
 
+sub null { RPC::XML::boolean->new(0) }
+
 =head2 is_null
 
 Returns search criteria for an is null search.  i.e. equivalend to $field is null in SQL.
@@ -426,7 +428,7 @@ Returns the new object or C<undef> if it could not be created.
 =cut
 
 sub create {
-    my ($self, $object_data) = @_;
+    my ($self, $object_data, @args) = @_;
 
     ### Create called with initial object data: 
     ### $object_data;
@@ -436,7 +438,7 @@ sub create {
     ### To
     ### $object_data;
     
-    if (my $id = $self->schema->client->create($self->object_class->model, $object_data)) 
+    if (my $id = $self->schema->client->create($self->object_class->model, $object_data, @args)) 
     {
         return $self->retrieve($id);
     }
