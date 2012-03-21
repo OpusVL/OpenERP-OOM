@@ -264,10 +264,10 @@ Returns an object by ID.
 =cut
 
 sub retrieve {
-    my ($self, $id) = @_;
+    my ($self, $id, @args) = @_;
     
     # FIXME - This should probably be in a try/catch block
-    if (my $object = $self->schema->client->read_single($self->object_class->model, $id)) 
+    if (my $object = $self->schema->client->read_single($self->object_class->model, $id, @args)) 
     {
         return $self->_inflate_object($self->object, $object);
     }
@@ -317,9 +317,9 @@ Takes a reference to a list of object IDs and returns a list of objects.
 =cut
 
 sub retrieve_list {
-    my ($self, $ids) = @_;
+    my ($self, $ids, @args) = @_;
     
-    if (my $objects = $self->schema->client->read($self->object_class->model, $ids)) {
+    if (my $objects = $self->schema->client->read($self->object_class->model, $ids, @args)) {
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
             if($attribute->type_constraint =~ /DateTime/)
             {
