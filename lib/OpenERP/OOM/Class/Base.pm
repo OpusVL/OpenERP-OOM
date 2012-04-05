@@ -108,6 +108,13 @@ paged set of results:
         offset => 20,    # Start at result 20
     }
 
+=head2 raw_search
+
+This is the same as search but it doesn't turn the results into objects.  This 
+is useful if your search is likely to have returned fields that aren't part of
+the object.  Queries like those used by the Stock By Location report are likely
+to return stock levels as well as the location details for example.
+
 =cut
 
 sub raw_search {
@@ -191,6 +198,12 @@ sub is_not_null
     my $field = shift;
     return [ $field, '!=', RPC::XML::boolean->new(0) ];
 }
+
+=head2 null
+
+Returns a 'null' for use in OpenERP calls and objects.  (Actually this is a False value).
+
+=cut
 
 sub null { RPC::XML::boolean->new(0) }
 
