@@ -1,5 +1,87 @@
 package OpenERP::OOM::Object;
 
+=head1 NAME
+
+OpenERP::OOM::Object
+
+=head1 SYNOPSIS
+
+    package Package::OpenERP::Object::Account;
+
+    use 5.010;
+    use OpenERP::OOM::Object;
+
+    openerp_model 'account.account';
+
+    has active => (is => 'rw', isa => 'Bool'); # Active
+    has code => (is => 'rw', isa => 'Str'); # (required) Code
+
+    ...
+
+    relationship 'consolidated_children' => (
+        key   => 'child_consol_ids',
+        type  => 'many2many',
+        class => 'Account',
+    ); # Consolidated Children
+
+    ...
+
+    1;
+
+=head1 DESCRIPTION
+
+Use this module to create the 'objects' for your models.  It also implicitly loads
+Moose too.  
+
+The class is linked to a model in OpenERP.
+
+=head1 METHODS
+
+=head2 openerp_model
+
+Specify the model in OpenERP.
+
+=head2 init_meta
+
+An internal method that hooks up the Moose internals and implicitly makes your
+new classes inherit from OpenERP::OOM::Object::Base.  See the 
+OpenERP::OOM::Object::Base documentation for a list of the methods your objects
+will have by default.
+
+=head2 relationship
+
+Used to specify relationships between this object and others in OpenERP.
+
+Possible options for the type are many2one, one2many and many2many.  These
+are specified in OpenERP in those terms.
+
+=head2 has_link
+
+Used to indicate links with other systems.  Typically this is to another table
+in DBIC at the moment.
+
+The key field is in OpenERP and is used for the ids of the objects to link to.
+The class specifies a link class that is used to follow the link.  These are in
+the namespace OpenERP::OOM::Link.  When class is set to DBIC this means it loads
+OpenERP::OOM::Link::DBIC to follow the link to the DBIC rows.
+
+Possible options for type are C<single> and C<multiple>.
+
+    has_link 'details' => (
+        key   => 'x_dbic_link_id',
+        type  => 'single',
+        class => 'DBIC',
+        args  => {class => 'AuctionHouseDetails'},
+    );
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (C) 2011 OpusVL
+
+This software is licensed according to the "IP Assignment Schedule"
+provided with the development project.
+
+=cut
 use 5.010;
 use Carp;
 use Moose;
