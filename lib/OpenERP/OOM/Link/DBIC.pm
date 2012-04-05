@@ -1,5 +1,54 @@
 package OpenERP::OOM::Link::DBIC;
 
+=head1 NAME
+
+OpenERP::OOM::Link::DBIC
+
+=head1 DESCRIPTION
+
+Class used to link OpenERP data with data in DBIC.  
+
+=head1 PROPERTIES
+
+=head2 dbic_schema
+
+This is the DBIC Schema object.  If you need a generic DBIC schema object
+this is normally the simplest way to access it.
+
+=head1 METHODS
+
+These methods are not normally called directly.
+
+=head2 create
+
+Returns the new ID of a row it creates in a table using DBIC.
+
+    my $id = $link->create({ class => 'RSName' }, $object_data);
+
+It also ensures there is no _source property on the object.
+
+=head2 retrieve
+
+This is equivalent to doing a find on a ResultSet.
+
+    my $object = $link->retrieve({ class => 'RSName' }, $id);
+
+=head2 search
+
+This is equivalent to doing a search on a ResultSet and then returning a list
+of all the id fields.
+
+    my @ids = $link->search({ class => 'RSName' }, $search, $options);
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (C) 2011 OpusVL
+
+This software is licensed according to the "IP Assignment Schedule"
+provided with the development project.
+
+=cut
+
 use 5.010;
 use Moose;
 use Try::Tiny;
