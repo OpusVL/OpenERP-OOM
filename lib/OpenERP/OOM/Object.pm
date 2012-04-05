@@ -61,6 +61,7 @@ Used to indicate links with other systems.  Typically this is to another table
 in DBIC at the moment.
 
 The key field is in OpenERP and is used for the ids of the objects to link to.
+
 The class specifies a link class that is used to follow the link.  These are in
 the namespace OpenERP::OOM::Link.  When class is set to DBIC this means it loads
 OpenERP::OOM::Link::DBIC to follow the link to the DBIC rows.
