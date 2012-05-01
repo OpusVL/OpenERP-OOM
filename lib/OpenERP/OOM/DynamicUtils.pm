@@ -1,5 +1,49 @@
 package OpenERP::OOM::DynamicUtils;
 
+=head1 NAME
+
+OpenERP::OOM::DynamicUtils
+
+=head1 SYNOPSIS
+
+    with 'OpenERP::OOM::DynamicUtils';
+
+    ...
+
+        $self->ensure_class_loaded($class);
+
+        ...
+
+        $object_data->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object_data->{$attribute->name});
+
+=head1 DESCRIPTION
+
+This role provides a couple of common methods for our OpenERP base classes.
+It's name is a bit of a misnomer because it just contains a couple of 
+useful functions, rather than a clear separation of concerns.
+
+=head1 METHODS
+
+=head2 ensure_class_loaded
+
+This method is designed to ensure we have effectively 'use'd 
+the class while ensuring we don't keep reloading it.  It is effectively 
+based on code seen in DBIx::Class and various other projects.
+
+=head2 prepare_attribute_for_send
+
+This converts dates to strings for sending and wraps up strings in RPC::XML::string
+objects to prevent numbers from being transmitted as the wrong type.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (C) 2011 OpusVL
+
+This software is licensed according to the "IP Assignment Schedule"
+provided with the development project.
+
+=cut
+
 use Class::Inspector;
 use Moose::Role;
 use Carp ();
