@@ -1,0 +1,108 @@
+package OpenERP::OOM::Tutorial::Schema;
+
+=pod
+
+=head1 NAME
+
+OpenERP::OOM::Tutorial::Schema - Setting up an OpenERP::OOM Schema
+
+=head1 DESCRIPTION
+
+=head2 Object model
+
+OpenERP::OOM 
+
+    +-------------------------------+
+    |            Schema             |
+    |          e.g. MyApp           |
+    +-------------------------------+
+         /|\                |
+          |               class
+       schema               |
+          |                \|/
+    +-------------------------------+
+    |             Class             |
+    |  e.g. MyApp::Class::Partner   |
+    +-------------------------------+
+         /|\                |
+          |              search
+        class           retrieve
+          |              create
+          |                 |
+          |                \|/ 
+    +-------------------------------+
+    |             Object            |
+    |  e.g. MyApp::Object::Partner  |
+    +-------------------------------+
+                    |
+                 update
+                 delete
+                    |
+                   \|/
+    +-------------------------------+
+    |          OpenERP model        |
+    |         e.g res.partner       |
+    +-------------------------------+
+
+=head2 Schema
+
+    package MyApp;
+    
+    use Moose;
+    extends 'OpenERP::OOM::Schema';
+    
+    1;
+
+To create a new instance of your schema, pass the OpenERP connection details in
+the call to C<new()>.
+
+    use MyApp;
+    
+    my $schema = MyApp->new(
+        openerp_connect => {
+            host     => 'localhost',
+            dbname   => 'openerp_db',
+            username => 'admin',
+            password => 'admin',
+        }
+    );
+
+=head2 Classes
+
+    package MyApp::Class::Partner;
+    use OpenERP::OOM::Class;
+    
+    object_type 'MyApp::Object::Company';
+    
+    1;
+
+From your schema, you can then access classes.
+
+    my $class = $schema->class('Partner');
+
+The class provides methods to search, retrieve, and create objects.
+
+=head2 Objects
+
+    package MyApp::Object::Partner;
+    use OpenERP::OOM::Object;
+    
+    openerp_model 'res.partner';
+    
+    has 'name' => (isa=>'Str', is=>'rw');
+    
+    1;
+
+Objects are created and retrieved from the class
+
+    my $partner = $schema->class('Partner')->create({
+        name => 'My Partner',
+    });
+
+    foreach my $partner ($schema->class->('Partner')->search) {
+        ...
+    }
+
+=cut
+
+__END__
