@@ -30,6 +30,7 @@ MANIFEST.SKIP
 META.yml
 README
 scripts/class_generate.pl
+scripts/filter_xspec.pl
 t/00-load.t
 t/boilerplate.t
 t/manifest.t
