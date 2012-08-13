@@ -26,14 +26,6 @@ has dirty           => (is => 'ro', isa => 'Str',  predicate => 'has_dirty');
 has track_attribute_helpers_dirty => 
     (is => 'rw', isa => 'Bool', default => 1);
 
-# There doesn't seem to be an easy way to get around writing this all out
-my %sullies = (
-    # note we handle "accessor" separately 
-    'Hash'  => [ qw{ set clear delete } ],
-    'Array' => [ qw{ push pop unshift shift set clear insert splice delete
-                     sort_in_place } ],
-    # FIXME ...
-);
 
 # wrap our internal clearer
 after clear_value => sub {
@@ -67,51 +59,6 @@ after install_accessors => sub {
         $self->accessor => 
             sub { $_[0]->_mark_dirty($name) if defined $_[1] }
     ) if $self->has_accessor;
-
-    return;
-};
-
-after install_delegation => sub {
-    my ($self, $inline) = @_;
-
-    # check for native hashes if we can do them...
-    return if 
-        !$self->has_handles || 
-        !$self->track_attribute_helpers_dirty
-        ;
-
-    my @does = grep { $self->does($_) } keys %sullies;
-
-    ##### @does
-    return unless scalar @does;
-    my $does = shift @does;
-
-    # we're not going through _canonicalize_handles here, as, well, it's
-    # private and I'm not sure it'll buy us anything here... right?
-    my %handles = %{ $self->handles };
-    my %writers = map { $_ => 1 } @{$sullies{$does}};
-    my $name    = $self->name;
-    my $dirty   = sub { shift->_mark_dirty($name) };
-    my $class   = $self->associated_class;
-
-    # method name -> operation (provided method type)
-    #### %handles
-    #### %writers
-    
-    for my $method_name (keys %handles) {
-
-        #### looking at: $method_name
-        my $op = $handles{$method_name};
-
-        #### writer?: $writers{$op} 
-        $class->add_after_method_modifier($method_name => $dirty)
-            if $writers{$op};
-
-        # accessor _might_ be used as a writer
-        $class->add_after_method_modifier($method_name 
-            => sub { $_[0]->_mark_dirty($name) if defined $_[2] } 
-        ) if $op eq 'accessor';
-    }
 
     return;
 };

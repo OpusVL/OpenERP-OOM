@@ -1,6 +1,6 @@
-#!perl -T
+#!perl
 
-use Test::Most;
+use Test::Most '-Test::Deep';
 
 bail_on_fail;
 
