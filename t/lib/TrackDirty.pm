@@ -8,7 +8,7 @@ use Moose::Exporter;
 
 =head1 NAME
 
-OpusVL::MooseX::TrackDirty
+TrackDirty
 
 =head1 VERSION
 
@@ -29,13 +29,19 @@ Moose::Exporter->setup_import_methods(
 
 A module for allowing objects to track their attributes changes.
 
-This is essentially a rip off of the MooseX::TrackDirty module.
+This is a very cut down version of an old module MooseX::TrackDirty::Attributes 
+(probably).
+
+This code has now been relegated to the tests because the attributes have
+been internalised into the module since it's so cut down and specific
+to our purpose now, it's not really worth having it seperate.  If you want
+this functionality, simply use the MooseX::TrackDirty::Attributes module.
 
 In order to use this module you can use this module like you would include
 Moose or if you are doing something fancy you can hook the roles in manually
 yourself.
 
-    use OpusVL::MooseX::TrackDirty;
+    use TrackDirty;
 
     has property => (is => 'ro', isa => 'Str');
 
@@ -81,13 +87,13 @@ If you are creating your own Moose::Exporter you should simply do thse bits your
     Moose::Util::MetaRole::apply_metaroles(
         for             => $args{for_class},
         class_metaroles => {
-            attribute => ['OpusVL::MooseX::TrackDirty::Attributes::Role::Meta::Attribute'],
+            attribute => ['OpenERP::OOM::Roles::Attribute'],
         },
     );
 
     Moose::Util::MetaRole::apply_base_class_roles( 
         for_class => $args{for_class}, 
-        roles     => ['OpusVL::MooseX::TrackDirty::Attributes::Role::Class'],
+        roles     => ['OpenERP::OOM::Roles::Class'],
     );
 
 =head1 LICENSE AND COPYRIGHT
