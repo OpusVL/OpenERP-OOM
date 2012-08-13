@@ -134,13 +134,13 @@ sub init_meta {
                 'OpenERP::OOM::Meta::Class::Trait::HasRelationship',
                 'OpenERP::OOM::Meta::Class::Trait::HasLink',
             ],
-            attribute => ['OpusVL::MooseX::TrackDirty::Attributes::Role::Meta::Attribute'],
+            attribute => ['OpenERP::OOM::Roles::Attribute'],
         },
     );
 
     Moose::Util::MetaRole::apply_base_class_roles( 
         for_class => $args{for_class}, 
-        roles     => ['OpusVL::MooseX::TrackDirty::Attributes::Role::Class'],
+        roles     => ['OpenERP::OOM::Roles::Class'],
     );
 
 }

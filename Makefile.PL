@@ -16,7 +16,6 @@ requires 'List::MoreUtils';
 requires 'RPC::XML';
 
 requires 'OpenERP::XMLRPC::Simple';
-requires 'OpusVL::MooseX::TrackDirty';
 requires 'MooseX::NotRequired';
 
 auto_install;
