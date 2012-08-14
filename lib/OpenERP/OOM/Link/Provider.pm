@@ -42,7 +42,7 @@ normally a DBIC dataset.
 
 Copyright (C) 2011 OpusVL
 
-This software is licensed according to the "IP Assignment Schedule" provided with the development project.
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 

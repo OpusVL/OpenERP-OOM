@@ -667,8 +667,7 @@ Jon Allen (JJ) - L<jj@opusvl.com>
 
 Copyright (C) 2010 Opus Vision Limited
 
-This software is licensed according to the "IP Assignment Schedule"
-provided with the development project.
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 
