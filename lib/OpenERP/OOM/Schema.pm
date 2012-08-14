@@ -45,6 +45,19 @@ provider is provided this won't be necessary.
 
 =head2 client
 
+The XMLRPC client that talks to OpenERP.
+
+=head2 link
+
+Provides a link to another part of the database.
+
+    $schema->link('DBIC')
+
+=head2 provide_link
+
+A default implementation of a link provider that loads up an OpenERP::OOM::Link::$class
+on the fly.  This is slow so you normally don't want to use this.
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright (C) 2011 OpusVL

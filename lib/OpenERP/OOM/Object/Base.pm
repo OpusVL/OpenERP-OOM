@@ -37,6 +37,10 @@ Returns the OpenERP ID of an object.
 
  say $obj->id;
 
+=head2 BUILD
+
+The BUILD method sets up the methods for the links to the attached objects.
+
 =cut
 
 has 'id' => (
@@ -248,6 +252,12 @@ sub delete {
 
 
 #-------------------------------------------------------------------------------
+
+=head2 print
+
+This is a debug method.
+
+=cut
 
 sub print {
     my $self = shift;
