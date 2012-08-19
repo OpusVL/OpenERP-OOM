@@ -10,7 +10,8 @@ OpenERP::OOM::Tutorial::Schema - Setting up an OpenERP::OOM Schema
 
 =head2 Object model
 
-OpenERP::OOM 
+OpenERP::OOM uses an object model consisting of a Schema, Classes, and Objects.
+These are organised as shown below, with methods to traverse up and down the tree.
 
     +-------------------------------+
     |            Schema             |
@@ -46,6 +47,8 @@ OpenERP::OOM
 
 =head2 Schema
 
+The schema class extends the OpenERP::OOM::Schema module, i.e.:
+
     package MyApp;
     
     use Moose;
@@ -68,6 +71,8 @@ the call to C<new()>.
     );
 
 =head2 Classes
+
+A typical class definition is as follows:
 
     package MyApp::Class::Partner;
     use OpenERP::OOM::Class;
@@ -93,15 +98,25 @@ The class provides methods to search, retrieve, and create objects.
     
     1;
 
-Objects are created and retrieved from the class
+Objects are created and retrieved from the class:
 
     my $partner = $schema->class('Partner')->create({
         name => 'My Partner',
     });
 
     foreach my $partner ($schema->class->('Partner')->search) {
-        ...
+        say $partner->name;
     }
+
+=head2 AUTHOR
+
+Jon Allen (JJ) <jj@opusvl.com>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (C) 2012 OpusVL
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 
