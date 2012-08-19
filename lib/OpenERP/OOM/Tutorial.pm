@@ -12,7 +12,7 @@ OpenERP::OOM::Tutorial
 
 =item L<OpenERP::OOM::Tutorial::Schema> - Setting up an OpenERP::OOM Schema
 
-=item L<OpenERP::OOM::Tutorial::Classes> - 
+=item L<OpenERP::OOM::Tutorial::Searching> - Tips on searching
 
 =back
 
