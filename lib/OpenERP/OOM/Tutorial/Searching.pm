@@ -10,7 +10,6 @@ OpenERP::OOM::Tutorial::Searching
 
 =head1 DESCRIPTION
 
-
 =head1 Complex Search Terms
 
 OpenERP allows logic operators like most database wrappers, just
@@ -25,7 +24,15 @@ to or things together.  You can also use '&' as an operator.
 
 For more details see the OpenERP Developer book.  
 
-=head1 NULL
+=head2 AUTHOR
+
+Colin Newell <colin@opusvl.com>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (C) 2012 OpusVL
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 
