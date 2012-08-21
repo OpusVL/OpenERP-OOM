@@ -15,6 +15,8 @@ requires 'Moose::Util::TypeConstraints';
 requires 'MooseX::Role::XMLRPC::Client';
 requires 'List::MoreUtils';
 requires 'RPC::XML';
+requires 'DateTime';
+requires 'DateTime::Format::Strptime';
 
 requires 'OpenERP::XMLRPC::Simple';
 requires 'MooseX::NotRequired';
