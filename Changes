@@ -1,5 +1,8 @@
 Revision history for OpenERP-OOM
 
+0.12    Tue Aug 21, 2012
+        Small fixes before CPAN release at YAPC::Europe 2012
+
 0.11    Mon Aug 20, 2012
         Changed to open source license
         First CPAN release
