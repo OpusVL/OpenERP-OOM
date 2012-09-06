@@ -2,7 +2,6 @@ package OpenERP::OOM::Class::Base;
 
 use 5.010;
 use Carp;
-use Data::Dumper;
 use Moose;
 use RPC::XML;
 use DateTime;
@@ -119,7 +118,6 @@ to return stock levels as well as the location details for example.
 
 sub raw_search {
     my ($self, @args) = @_;
-    use Data::Dumper;
     ### Initial search args: @args
     
     my @search;
