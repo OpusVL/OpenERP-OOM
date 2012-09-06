@@ -117,7 +117,41 @@ to return stock levels as well as the location details for example.
 =cut
 
 sub raw_search {
-    my ($self, @args) = @_;
+    my $self = shift;
+    return $self->_raw_search(0, @_);
+}
+
+=head2 search_limited_fields
+
+This is an alternative version of search that only fills in the required fields
+of the object.
+
+    # avoid pulling the whole attachement down for a search
+    my @a = $attachments->search_limited_fields([
+        qw/res_model res_name type url create_uid create_date
+            datas_fname description name res_id/
+    ], [
+        res_model => '=' => 'product.template',
+        res_id => '=' => 1,
+    ]);
+
+This allows you to avoid pulling down problem fields.  The most obvious example
+is get a list of attachments for an object, without pulling down all the data
+for the attachement.
+
+=cut 
+
+sub search_limited_fields {
+    my $self = shift;
+    my $fields = shift;
+
+    my $ids = $self->_raw_search(1, @_);
+	return wantarray ? () : undef unless ( defined $ids && ref $ids eq 'ARRAY' && scalar @$ids >= 1 );
+    return $self->retrieve_list($ids, {}, $fields);
+}
+
+sub _raw_search {
+    my ($self, $ids_only, @args) = @_;
     ### Initial search args: @args
     
     my @search;
@@ -155,6 +189,11 @@ sub raw_search {
     ### Search: @search
     ### Search context: $context
     ### Search options: $options
+    if($ids_only)
+    {
+        return $self->schema->client->search($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
+    }
+
     my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
 
     if ($objects) {    
