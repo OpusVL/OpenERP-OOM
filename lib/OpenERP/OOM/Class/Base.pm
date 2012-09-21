@@ -183,7 +183,7 @@ sub _raw_search {
         }
     }
     
-    my $context = shift @args;
+    my $context = $self->_get_context(shift @args);
     my $options = shift @args;
     $options = {} unless $options;
     ### Search: @search
@@ -317,10 +317,26 @@ sub retrieve {
     my ($self, $id, @args) = @_;
     
     # FIXME - This should probably be in a try/catch block
-    if (my $object = $self->schema->client->read_single($self->object_class->model, $id, @args)) 
+    my $context = $self->_get_context(shift @args);
+    if (my $object = $self->schema->client->read_single($self->object_class->model, $id, $context, @args)) 
     {
         return $self->_inflate_object($self->object, $object);
     }
+}
+
+sub _get_context
+{
+    my $self = shift;
+    my $context = shift;
+
+    my %translation = ( lang => $self->schema->lang );
+    if($context)
+    {
+        # merge the context with our language for translation.
+        @translation{keys %$context} = values %$context;
+    }
+    $context = \%translation;
+    return $context;
 }
 
 sub _inflate_object
@@ -369,7 +385,8 @@ Takes a reference to a list of object IDs and returns a list of objects.
 sub retrieve_list {
     my ($self, $ids, @args) = @_;
     
-    if (my $objects = $self->schema->client->read($self->object_class->model, $ids, @args)) {
+    my $context = $self->_get_context(shift @args);
+    if (my $objects = $self->schema->client->read($self->object_class->model, $ids, $context, @args)) {
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
             if($attribute->type_constraint =~ /DateTime/)
             {

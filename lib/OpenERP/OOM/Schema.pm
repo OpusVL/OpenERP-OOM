@@ -96,6 +96,12 @@ has 'client' => (
     builder => '_build_client',
 );
 
+has lang => (
+    isa => 'Str',
+    is => 'ro',
+    default => 'en_GB',
+);
+
 sub _build_link_provider
 {
     # we are also a link provider
