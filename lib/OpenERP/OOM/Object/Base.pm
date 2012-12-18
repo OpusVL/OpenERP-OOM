@@ -632,7 +632,9 @@ sub execute
 {
     my ($self, $action, $context) = @_;
 
-    return $self->class->schema->client->object_execute($action, $self->model, [$self->id], $context);
+    my @args = ($action, $self->model, [$self->id]);
+    push @args, $context if $context;
+    return $self->class->schema->client->object_execute(@args);
 }
 
 =head2 get_report
