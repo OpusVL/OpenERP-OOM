@@ -57,7 +57,7 @@ after install_accessors => sub {
     ) if $self->has_writer;
     $class->add_after_method_modifier(
         $self->accessor => 
-            sub { $_[0]->_mark_dirty($name) if defined $_[1] }
+            sub { $_[0]->_mark_dirty($name) if exists $_[1] }
     ) if $self->has_accessor;
 
     return;
