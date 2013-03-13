@@ -7,6 +7,8 @@ use RPC::XML;
 use DateTime;
 use DateTime::Format::Strptime;
 use MooseX::NotRequired;
+use Try::Tiny;
+use Time::HiRes qw/usleep/;
 
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
@@ -504,11 +506,62 @@ sub create {
 
     ### To
     ### $object_data;
-    
-    if (my $id = $self->schema->client->create($self->object_class->model, $object_data, @args)) 
+    my $id; 
+    $self->_with_retries(sub {
+        $id = $self->schema->client->create($self->object_class->model, $object_data, @args);
+    });
+    if ($id) 
     {
         return $self->retrieve($id);
     }
+}
+
+sub _with_retries
+{
+    my $self = shift;
+    my $call = shift;
+    my $tries = 0;
+    my $error;
+    my $retry = 1;
+    my $delay = 0;
+    while($retry && $tries < 10)
+    {
+        try
+        {
+            $call->();
+            $retry = 0;
+            $error = '';
+        } 
+        catch
+        {
+            #if(/current transaction is aborted, commands ignored until end of transaction block/)
+            #{
+                $retry = 1;
+                $error = $_;
+                if($delay)
+                {
+                    usleep($delay);
+                    $delay *= 2;
+                    $delay += int(rand(1000));
+                    if($delay >= 1000000)
+                    {
+                        $delay = 1000000;
+                    }
+                }
+                else
+                {
+                    $delay = 10000;
+                }
+                warn "Retrying<<< $$";
+            # }
+            # else
+            # {
+            #     die $_;
+            # }
+        };
+        $tries++;
+    }
+    die $error if $error;
 }
 
 
