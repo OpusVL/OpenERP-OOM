@@ -164,7 +164,9 @@ sub update {
         }
     }
 
-    $self->class->schema->client->update($self->model, $self->id, $object);
+    $self->_with_retries(sub {
+        $self->class->schema->client->update($self->model, $self->id, $object);
+    });
     $self->refresh;
     
     return $self;
@@ -607,6 +609,54 @@ Is likely to translate to something like this,
 The 24 is the id of the object.
 
 =cut
+
+sub _with_retries
+{
+    my $self = shift;
+    my $call = shift;
+    my $tries = 0;
+    my $error;
+    my $retry = 1;
+    my $delay = 0;
+    while($retry && $tries < 10)
+    {
+        try
+        {
+            $call->();
+            $retry = 0;
+            $error = '';
+        } 
+        catch
+        {
+            #if(/current transaction is aborted, commands ignored until end of transaction block/)
+            #{
+                $retry = 1;
+                $error = $_;
+                if($delay)
+                {
+                    usleep($delay);
+                    $delay *= 2;
+                    $delay += int(rand(1000));
+                    if($delay >= 1000000)
+                    {
+                        $delay = 1000000;
+                    }
+                }
+                else
+                {
+                    $delay = 10000;
+                }
+                warn "Retrying<<< $$";
+            # }
+            # else
+            # {
+            #     die $_;
+            # }
+        };
+        $tries++;
+    }
+    die $error if $error;
+}
 
 sub execute_workflow
 {
