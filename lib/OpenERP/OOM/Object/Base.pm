@@ -634,6 +634,7 @@ sub execute_workflow
                 {
                     usleep($delay);
                     $delay *= 2;
+                    $delay += int(rand(1000));
                     if($delay >= 1000000)
                     {
                         $delay = 1000000;
