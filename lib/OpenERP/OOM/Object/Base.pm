@@ -678,7 +678,11 @@ sub execute
 
     my @args = ($action, $self->model, [$self->id]);
     push @args, $context if $context;
-    return $self->class->schema->client->object_execute(@args);
+    my $retval;
+    $self->class->_with_retries(sub {
+        $retval = $self->class->schema->client->object_execute(@args);
+    });
+    return $retval;
 }
 
 =head2 get_report
