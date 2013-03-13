@@ -6,6 +6,7 @@ use Data::Dumper;
 use List::MoreUtils qw/uniq/;
 use Moose;
 use Try::Tiny;
+use Time::HiRes qw/usleep/;
 
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
@@ -611,7 +612,47 @@ sub execute_workflow
 {
     my ($self, $workflow) = @_;
 
-    $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
+    my $tries = 0;
+    my $error;
+    my $retry = 1;
+    my $delay = 0;
+    while($retry && $tries < 10)
+    {
+        try
+        {
+            $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
+            $retry = 0;
+            $error = '';
+        } 
+        catch
+        {
+            #if(/current transaction is aborted, commands ignored until end of transaction block/)
+            #{
+                $retry = 1;
+                $error = $_;
+                if($delay)
+                {
+                    usleep($delay);
+                    $delay *= 2;
+                    if($delay >= 1000000)
+                    {
+                        $delay = 1000000;
+                    }
+                }
+                else
+                {
+                    $delay = 10000;
+                }
+                warn "Retrying<<< $$";
+            # }
+            # else
+            # {
+            #     die $_;
+            # }
+        };
+        $tries++;
+    }
+    die $error if $error;
 }
 
 =head2 execute
