@@ -145,12 +145,18 @@ for the attachement.
 
 sub search_limited_fields {
     my $self = shift;
+    return $self->_search_limited_fields(1, @_);
+}
+
+sub _search_limited_fields {
+    my $self = shift;
+    my $objects = shift;
     my $fields = shift;
 
     my $ids = $self->_raw_search(1, @_);
 	return wantarray ? () : undef unless ( defined $ids && ref $ids eq 'ARRAY' && scalar @$ids >= 1 );
     my ($context) = grep { ref $_ eq 'HASH' } @_;
-    return $self->retrieve_list($ids, $context, $fields);
+    return $self->_retrieve_list($objects, $ids, $context, $fields);
 }
 
 sub _raw_search {
@@ -386,7 +392,12 @@ Takes a reference to a list of object IDs and returns a list of objects.
 =cut
 
 sub retrieve_list {
-    my ($self, $ids, @args) = @_;
+    my $self = shift;
+    return $self->_retrieve_list(1, @_);
+}
+
+sub _retrieve_list {
+    my ($self, $inflate_objects, $ids, @args) = @_;
     
     my $context = $self->_get_context(shift @args);
     if (my $objects = $self->schema->client->read($self->object_class->model, $ids, $context, @args)) {
@@ -397,7 +408,8 @@ sub retrieve_list {
                 map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
             }
         }
-        return map {$self->object_class->new($_)} @$objects;
+        return map {$self->object_class->new($_)} @$objects if $inflate_objects;
+        return @$objects;
     }
 }
 
