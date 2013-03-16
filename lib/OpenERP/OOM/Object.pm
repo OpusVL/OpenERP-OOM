@@ -250,6 +250,12 @@ sub _add_rel2one {
         coerce => 1,
     );
     
+    my $cache_field = '__cache_' . $field_name;
+    $meta->add_attribute(
+        $cache_field,
+        is     => 'rw',
+    );
+    
     $meta->add_method(
         $name,
         sub {
@@ -258,10 +264,14 @@ sub _add_rel2one {
             {
                 my $val = shift;
                 $self->$field_name($val ? _id($val) : undef);
+                $self->$cache_field(undef);
                 return unless defined wantarray; # avoid needless retrieval
             }
             return unless $self->{$options{key}};
-            return $self->class->schema->class($options{class})->retrieve($self->{$options{key}});
+            return $self->$cache_field if defined $self->$cache_field;
+            my $val = $self->class->schema->class($options{class})->retrieve($self->{$options{key}});
+            $self->$cache_field($val);
+            return $val;
         },
     );
 }
