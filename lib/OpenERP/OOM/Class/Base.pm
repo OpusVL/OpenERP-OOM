@@ -146,10 +146,11 @@ for the attachement.
 sub search_limited_fields {
     my $self = shift;
     my $fields = shift;
+    my $context = shift // {};
 
     my $ids = $self->_raw_search(1, @_);
 	return wantarray ? () : undef unless ( defined $ids && ref $ids eq 'ARRAY' && scalar @$ids >= 1 );
-    return $self->retrieve_list($ids, {}, $fields);
+    return $self->retrieve_list($ids, $context, $fields);
 }
 
 sub _raw_search {
