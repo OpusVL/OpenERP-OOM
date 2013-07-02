@@ -121,18 +121,25 @@ sub _build_client {
 
 #-------------------------------------------------------------------------------
 
+has _class_cache => (is => 'ro', isa => 'HashRef', default => sub { {} } );
+
 sub class {
     my ($self, $class) = @_;
     
+    if(exists $self->_class_cache->{$class})
+    {
+        return $self->_class_cache->{$class};
+    }
     my $package = $self->meta->name . "::Class::$class";
     my $object_package = $self->meta->name . "::Object::$class";
     
     $self->ensure_class_loaded($package);
     $self->ensure_class_loaded($object_package);
     
-    return $package->new(
+    $self->_class_cache->{$class} = $package->new(
         schema => $self,
     );
+    return $self->_class_cache->{$class};
 }
 
 

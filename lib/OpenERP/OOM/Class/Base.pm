@@ -327,9 +327,27 @@ sub retrieve {
     
     # FIXME - This should probably be in a try/catch block
     my $context = $self->_get_context(shift @args);
+    $self->_ensure_object_fields(\@args);
     if (my $object = $self->schema->client->read_single($self->object_class->model, $id, $context, @args)) 
     {
         return $self->_inflate_object($self->object, $object);
+    }
+}
+
+sub _ensure_object_fields
+{
+    my $self = shift;
+    my $args = shift;
+
+    unless(@$args)
+    {
+        my @fields;
+        foreach my $attribute ($self->object_class->meta->get_all_attributes) 
+        {
+            my $name = $attribute->name;
+            push @fields, $name unless $name =~ /^_/;
+        }
+        push @$args, \@fields;
     }
 }
 
@@ -400,6 +418,7 @@ sub _retrieve_list {
     my ($self, $inflate_objects, $ids, @args) = @_;
     
     my $context = $self->_get_context(shift @args);
+    $self->_ensure_object_fields(\@args);
     if (my $objects = $self->schema->client->read($self->object_class->model, $ids, $context, @args)) {
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
             if($attribute->type_constraint && $attribute->type_constraint =~ /DateTime/)
