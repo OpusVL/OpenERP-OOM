@@ -219,7 +219,6 @@ sub _add_rel2many {
                     @ids = map { _id($_) } @args;
                 }
                 $self->$field_name(\@ids);
-                $self->{__track_dirty}->{$field_name} = 1; # manually set the dirty bit
                 return unless defined wantarray; # avoid needless retrieval
             }
             return unless $self->{$field_name};
@@ -265,7 +264,6 @@ sub _add_rel2one {
             {
                 my $val = shift;
                 $self->$field_name($val ? _id($val) : undef);
-                $self->{__track_dirty}->{$field_name} = 1; # manually set the dirty bit
                 $self->$cache_field(undef);
                 return unless defined wantarray; # avoid needless retrieval
             }
