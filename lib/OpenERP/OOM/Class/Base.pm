@@ -580,6 +580,30 @@ sub _with_retries
 
 #-------------------------------------------------------------------------------
 
+=head2 execute
+
+Performs an execute in OpenERP on the class level.  
+
+    $c->model('OpenERP')->class('Invoice')->execute('build_invoice', $args);
+
+Please look at L<OpenERP::OOM::Object::Base> for more information on C<execute>
+
+=cut
+
+sub execute {
+    my $self   = shift;
+    my $action = shift;
+    my @params = @_;
+    my @args = ($action, $self->object_class->model, @params);
+    my $retval;
+    $self->_with_retries(sub {
+        $retval = $self->schema->client->object_execute(@args);
+    });
+    return $retval;
+}
+
+#-------------------------------------------------------------------------------
+
 =head1 AUTHOR
 
 Jon Allen (JJ) - L<jj@opusvl.com>
