@@ -685,6 +685,36 @@ sub execute
     return $retval;
 }
 
+=head2 executex
+
+Similar to execute but it allows you to specify any number of parameters.
+
+Primarily created to prevent any compatibility problems with other callers.
+Although I'm not entirely sure if there are any.
+
+    $self->executex('add_invoices_to_payment', [1,2], [3,4]);
+
+Translates roughly to 
+
+    execute_kw(..., 'payment.order', 'add_invoices_to_payment', [5], [1, 2], [3, 4])
+
+Stick a hash on the end of the list of params to pass a context object.
+
+=cut
+
+sub executex
+{
+    my ($self, $action, @rest) = @_;
+
+    my @args = ($action, $self->model, [$self->id]);
+    push @args, @rest if @rest;
+    my $retval;
+    $self->class->_with_retries(sub {
+        $retval = $self->class->schema->client->object_execute(@args);
+    });
+    return $retval;
+}
+
 =head2 get_report
 
 To print a purchase order we need to send a report, then get it, then display it, then print it (and you don't want to know about all the traffic behind the scenes...)
