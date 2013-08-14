@@ -727,14 +727,15 @@ The first step looks like this:
 
 sub get_report
 {
-    my ($self, $report_id) = @_;
+    my $self = shift;
+    my $report_id = shift;
 
     my $id = $self->class->schema->client->report_report($report_id, $self->id,
             { 
                 model       => $self->model, 
                 id          => $self->id,
                 report_type => 'pdf',
-            });
+            }, @_);
 
     # the report_report function returns only a report id, which is all we need to pass to the next function call
     # but report_report_get don't work first time (?!) so we need to call it recursively until with get an answer
