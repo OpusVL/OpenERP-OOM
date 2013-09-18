@@ -18,7 +18,7 @@ requires 'RPC::XML';
 requires 'DateTime';
 requires 'DateTime::Format::Strptime';
 
-requires 'OpenERP::XMLRPC::Simple';
+requires 'OpenERP::XMLRPC::Client' => 0.16;
 requires 'MooseX::NotRequired';
 
 auto_install;
