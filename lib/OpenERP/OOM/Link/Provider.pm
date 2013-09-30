@@ -5,6 +5,10 @@ use Moose::Role;
 requires 'provide_link';
 with 'OpenERP::OOM::DynamicUtils';
 
+sub close_connections
+{
+}
+
 =head1 NAME
 
 OpenERP::OOM::Link::Provider
