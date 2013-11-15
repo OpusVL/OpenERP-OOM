@@ -78,7 +78,8 @@ sub prepare_attribute_for_send
     my $type = shift;
     my $value = shift;
 
-    return RPC::XML::string->new($value) if $type =~ /Str/i;
+    return RPC::XML::string->new($value) if $type =~ /Str/i && defined $value;
+    return RPC::XML::boolean->new($value) if $type =~ /Str/i; # return null in effect
     return $value->ymd if $type =~ qr'DateTime'i && $value && ref $value && $value->can('ymd');
     
     return $value;
