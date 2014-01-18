@@ -16,6 +16,7 @@ requires 'MooseX::Role::XMLRPC::Client';
 requires 'List::MoreUtils';
 requires 'RPC::XML';
 requires 'DateTime';
+requires 'Try::Tiny::Retry';
 requires 'DateTime::Format::Strptime';
 
 requires 'OpenERP::XMLRPC::Client' => 0.16;
