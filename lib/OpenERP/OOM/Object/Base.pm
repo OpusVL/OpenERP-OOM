@@ -6,6 +6,7 @@ use Data::Dumper;
 use List::MoreUtils qw/uniq/;
 use Moose;
 use Try::Tiny;
+use Try::Tiny::Retry;
 use Time::HiRes qw/usleep/;
 
 extends 'Moose::Object';
@@ -614,48 +615,15 @@ sub execute_workflow
 {
     my ($self, $workflow) = @_;
 
-    my $tries = 0;
-    my $error;
-    my $retry = 1;
-    my $delay = 0;
-    while($retry && $tries < 10)
+    retry
     {
-        try
-        {
-            $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
-            $retry = 0;
-            $error = '';
-        } 
-        catch
-        {
-            #if(/current transaction is aborted, commands ignored until end of transaction block/)
-            #{
-                $retry = 1;
-                $error = $_;
-                if($delay)
-                {
-                    usleep($delay);
-                    $delay *= 2;
-                    $delay += int(rand(1000));
-                    if($delay >= 1000000)
-                    {
-                        $delay = 1000000;
-                    }
-                }
-                else
-                {
-                    $delay = 10000;
-                }
-                warn "Retrying<<< $$";
-            # }
-            # else
-            # {
-            #     die $_;
-            # }
-        };
-        $tries++;
+        $self->class->schema->client->object_exec_workflow($workflow, $self->model, $self->id);
     }
-    die $error if $error;
+    retry_if {/current transaction is aborted, commands ignored until end of transaction block/}
+    catch
+    {
+        die $_; # rethrow the unhandled exception
+    };
 }
 
 =head2 execute
