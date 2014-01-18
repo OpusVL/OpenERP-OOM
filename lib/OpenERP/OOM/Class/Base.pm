@@ -8,7 +8,7 @@ use DateTime;
 use DateTime::Format::Strptime;
 use MooseX::NotRequired;
 use Try::Tiny;
-use Try::Tiny::Retry ':all';
+use Try::Tiny::Retry;
 use Time::HiRes qw/usleep/;
 
 extends 'Moose::Object';
