@@ -16,6 +16,10 @@ load the class into memory.
 
     my $accounts = $schema->class('Accounts');
 
+=head2 timeout
+
+Set the timeout - passes through to the $self->client->openerp_rpc->timeout() method underneath.
+
 =head1 PROPERTIES
 
 =head2 openerp_connect
@@ -163,6 +167,11 @@ sub provide_link {
         schema => $self,
         config => $self->link_config->{$class},
     );
+}
+
+sub timeout {
+    my $self = shift;
+    return $self->client->openerp_rpc->timeout(@_);
 }
 
 1;
