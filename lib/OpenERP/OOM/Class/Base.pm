@@ -8,6 +8,7 @@ use DateTime;
 use DateTime::Format::Strptime;
 use MooseX::NotRequired;
 use Try::Tiny;
+use Try::Tiny::Retry;
 use Time::HiRes qw/usleep/;
 
 extends 'Moose::Object';
@@ -552,48 +553,15 @@ sub _with_retries
 {
     my $self = shift;
     my $call = shift;
-    my $tries = 0;
-    my $error;
-    my $retry = 1;
-    my $delay = 0;
-    while($retry && $tries < 10)
+    retry
     {
-        try
-        {
-            $call->();
-            $retry = 0;
-            $error = '';
-        } 
-        catch
-        {
-            #if(/current transaction is aborted, commands ignored until end of transaction block/)
-            #{
-                $retry = 1;
-                $error = $_;
-                if($delay)
-                {
-                    usleep($delay);
-                    $delay *= 2;
-                    $delay += int(rand(1000));
-                    if($delay >= 1000000)
-                    {
-                        $delay = 1000000;
-                    }
-                }
-                else
-                {
-                    $delay = 10000;
-                }
-                warn "Retrying<<< $$";
-            # }
-            # else
-            # {
-            #     die $_;
-            # }
-        };
-        $tries++;
-    }
-    die $error if $error;
+        $call->();
+    } 
+    retry_if {/current transaction is aborted, commands ignored until end of transaction block/}
+    catch
+    {
+        die $_; # rethrow the unhandled exception
+    };
 }
 
 
