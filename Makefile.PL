@@ -23,6 +23,13 @@ requires 'OpenERP::XMLRPC::Client' => 0.16;
 requires 'MooseX::NotRequired';
 
 auto_install;
+resources (
+    repository => {
+        url => 'ssh://git/srv/git/OpenERP-OOM',
+        type => 'git',
+    },
+);
+
 
 WriteAll;
 
