@@ -201,10 +201,10 @@ sub _raw_search {
     ### Search options: $options
     if($ids_only)
     {
-        return $self->schema->client->search($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
+        return $self->schema->client->search($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit}, $options->{order});
     }
 
-    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit});
+    my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit}, $options->{order});
 
     if ($objects) {    
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
@@ -428,8 +428,10 @@ sub _retrieve_list {
                 map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
             }
         }
-        return map {$self->object_class->new($_)} @$objects if $inflate_objects;
-        return @$objects;
+        my %id_map = map { $_->{id} => $_ } @$objects;
+        my @sorted = map { $id_map{$_} } @$ids;
+        return map {$self->object_class->new($_)} @sorted if $inflate_objects;
+        return @sorted;
     }
 }
 
