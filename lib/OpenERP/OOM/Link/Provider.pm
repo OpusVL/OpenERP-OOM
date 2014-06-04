@@ -42,6 +42,12 @@ normally a DBIC dataset.
 
     1;
 
+=head1 METHODS
+
+=head2 close_connections
+
+This method should close any open database connections held by the link provider.
+
 =head1 COPYRIGHT and LICENSE
 
 Copyright (C) 2011 OpusVL

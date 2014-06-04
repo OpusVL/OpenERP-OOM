@@ -1,3 +1,4 @@
+1;
 package OpenERP::OOM::Tutorial::Schema;
 
 =pod
