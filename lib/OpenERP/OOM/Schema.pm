@@ -119,6 +119,7 @@ sub _build_link_provider
 sub _build_client {
     my $self = shift;
     
+    die 'Your config file has not been loaded or wired up correctly.' unless $self->openerp_connect;
     return OpenERP::XMLRPC::Client->new(%{$self->openerp_connect});
 }
 
