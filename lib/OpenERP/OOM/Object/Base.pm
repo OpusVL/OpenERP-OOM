@@ -254,6 +254,32 @@ sub delete {
     $self->class->schema->client->delete($self->model, $self->id);
 }
 
+sub _copy
+{
+    my $self = shift;
+
+    my $id = $self->class->schema->client->copy($self->model, $self->id);
+    # now load the new invoice and return it
+    return $id;
+}
+
+=head2 copy
+
+Clone the current object, returning the new object.
+
+This is equivalent to pressing duplicate in the OpenERP user interface.
+
+=cut
+
+sub copy
+{
+    my ($self, @args) = @_;
+    my $args = shift;
+    my $id = $self->_copy;
+    # passing args through allows for field refinement.
+    my $clone = $self->class->retrieve($id, @args);
+    return $clone;
+}
 
 #-------------------------------------------------------------------------------
 
