@@ -743,6 +743,42 @@ sub get_report
 }
 
 #-------------------------------------------------------------------------------
+# FIXME - these functions rely on the ref type to determine the difference.
+# This'll break if we use serialised data in a single tuple in openerp, but it
+# doesn't look like we ever do that. Yet.
+
+=head2 leaf_attributse
+
+Return a K-V-pair list of attributes and values that are not relations
+
+=cut
+
+sub leaf_attributes {
+    my ($self) = @_;
+    my $meta = $self->meta;
+
+    my %leaf_attributes;
+
+    for my $attr ($meta->get_all_attributes) {
+        my $name = $attr->name;
+
+        # I think these are the only things we use to identify
+        # not-really-properties
+        $name =~ /^__cache/ and next;
+        $name =~ /^x_/ and next;
+
+        if (! $attr->has_type_constraint) {
+            $leaf_attributes{$name} = $self->$name;
+            next;
+        }
+
+        if (! $attr->type_constraint->is_a_type_of('Ref')) {
+            $leaf_attributes{$name} = $self->$name;
+        }
+    }
+
+    return %leaf_attributes;
+}
 
 =head1 AUTHOR
 
