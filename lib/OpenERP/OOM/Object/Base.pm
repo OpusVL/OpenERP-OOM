@@ -348,6 +348,7 @@ sub create_related {
     ### $relation_name
     ### with initial data:
     ### $object
+    my $created_obj;
     
     if (my $relation = $self->meta->relationship->{$relation_name}) {
         given ($relation->{type}) {
@@ -373,7 +374,7 @@ sub create_related {
                         my $foreign_key = $related_meta->{$far_end_relation}->{key};
                         
                         ### Far end relation exists
-                        $self->class->schema->class($relation->{class})->create({
+                        $created_obj = $self->class->schema->class($relation->{class})->create({
                             %$object,
                             $foreign_key => $self->id,
                         });
@@ -382,6 +383,7 @@ sub create_related {
                     } else {
                         my $new_object = $self->class->schema->class($relation->{class})->create($object);
                         
+                        $created_obj = $new_object;
                         $self->refresh;
                         
                         unless (grep {$new_object->id} @{$self->{$relation->{key}}}) {
@@ -404,6 +406,7 @@ sub create_related {
                 ### Creating linked object
                 try {
                     my $id = $self->class->schema->link($relation->{class})->create($relation->{args}, $object);
+                    $created_obj = $id;
                     ### Linked object created with key $id
                     $self->{$relation->{key}} = $id;
                     $self->update_single($relation->{key});
@@ -420,6 +423,7 @@ sub create_related {
     else {
         croak "Can not find relation $relation_name";
     }
+    return $created_obj if $created_obj;
 }
 
 sub _id
