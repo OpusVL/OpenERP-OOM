@@ -672,10 +672,11 @@ The 26 is the id of the object.
 
 sub execute
 {
-    my ($self, $action, $context) = @_;
+    my $self   = shift;
+    my $action = shift;
+    my @params = @_;
 
-    my @args = ($action, $self->model, [$self->id]);
-    push @args, $context if $context;
+    my @args = ($action, $self->model, [$self->id], @params);
     my $retval;
     $self->class->_with_retries(sub {
         $retval = $self->class->schema->client->object_execute(@args);
