@@ -400,6 +400,46 @@ sub default_values
     return $self->_inflate_object($class, $object);
 }
 
+=head2 create_related_object_for_DBIC
+
+Creates a related DBIC object for an object of this class (before the object
+is created).
+
+It returns a transaction guard alongside the id so that if the corresponding
+object fails to create it can be aborted.  
+
+This can make the link up smoother as you know the id of the object to refer
+to in OpenERP before creating the OpenERP object.  It also allows for failures
+to be dealt with more reliably.
+
+     my ($id, $guard) = $self->create_related_object_for_DBIC('details', $details);
+     # Create the object
+     $object->{x_dbic_link_id} = $id;
+     $object->{default_code} = sprintf("OBJ%06d", $id);
+
+     my $prod = $self->$orig($object);
+     $guard->commit;
+
+=cut
+
+sub create_related_object_for_DBIC
+{
+    my ($self, $relation_name, $data) = @_;
+    my $object = $self->object_class;
+    my $relation = $object->meta->link->{$relation_name};
+    if($relation)
+    {
+        die 'Wrong type of relation' unless $relation->{class} eq 'DBIC';
+        my $link = $self->schema->link($relation->{class});
+        my $guard = $link->dbic_schema->storage->txn_scope_guard;
+        my $id = $link->create($relation->{args}, $data);
+        return ($id, $guard);
+    }
+    else
+    {
+        die 'Unable to find relation';
+    }
+}
 #-------------------------------------------------------------------------------
 
 =head2 retrieve_list
