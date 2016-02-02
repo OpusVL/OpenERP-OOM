@@ -210,8 +210,7 @@ sub _raw_search {
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
             if($attribute->type_constraint && $attribute->type_constraint =~ /DateTime/)
             {
-                my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
-                map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
+                map { $_->{$attribute->name} = $self->_parse_datetime($_->{$attribute->name}) } @$objects;
             }
         }
         return $objects;
@@ -376,11 +375,21 @@ sub _inflate_object
     foreach my $attribute ($self->object_class->meta->get_all_attributes) {
         if($attribute->type_constraint && $attribute->type_constraint =~ /DateTime/)
         {
-            my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
-            $object->{$attribute->name} = $parser->parse_datetime($object->{$attribute->name});
+            $object->{$attribute->name} = $self->_parse_datetime($object->{$attribute->name});
         }
     }
     return $object_class->new($object);
+}
+
+sub _do_strptime {
+    my ($self, $string, $format) = @_;
+    my $parser = DateTime::Format::Strptime->new(pattern => $format);
+    return $parser->parse_datetime($string);
+}
+
+sub _parse_datetime {
+    my ($self, $string) = @_;
+    return $self->_do_strptime($string, '%Y-%m-%d') // $self->_do_strptime($string, '%Y-%m-%d %H:%M:%S');
 }
 
 =head2 default_values
@@ -464,8 +473,7 @@ sub _retrieve_list {
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
             if($attribute->type_constraint && $attribute->type_constraint =~ /DateTime/)
             {
-                my $parser = DateTime::Format::Strptime->new(pattern     => '%Y-%m-%d');
-                map { $_->{$attribute->name} = $parser->parse_datetime($_->{$attribute->name}) } @$objects;
+                map { $_->{$attribute->name} = $self->_parse_datetime($_->{$attribute->name}) } @$objects;
             }
         }
         my %id_map = map { $_->{id} => $_ } @$objects;
