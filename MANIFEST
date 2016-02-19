@@ -33,13 +33,17 @@ Makefile.PL
 MANIFEST
 MANIFEST.SKIP
 META.yml
+MYMETA.json
 README
 scripts/class_generate.pl
 t/00-load.t
 t/boilerplate.t
+t/ExceptionMock.pm
 t/lib/Object.pm
 t/lib/TrackDirty.pm
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+t/retries-object.pm
+t/retries.t
 t/simple.t
