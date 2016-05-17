@@ -1,5 +1,8 @@
 Revision history for OpenERP-OOM
 
+0.40    Thu May 7, 2016
+        Fixed fallback order when parsing dates and timestamps read from Odoo
+
 0.14    Fri Sept 21, 2012
         Finally started to make sure we send the context information 
         relating to translation, specifically we send lang: en_GB in the
