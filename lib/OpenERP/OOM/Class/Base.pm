@@ -389,7 +389,7 @@ sub _do_strptime {
 
 sub _parse_datetime {
     my ($self, $string) = @_;
-    return $self->_do_strptime($string, '%Y-%m-%d') // $self->_do_strptime($string, '%Y-%m-%d %H:%M:%S');
+    return $self->_do_strptime($string, '%Y-%m-%d %H:%M:%S') // $self->_do_strptime($string, '%Y-%m-%d');
 }
 
 =head2 default_values
