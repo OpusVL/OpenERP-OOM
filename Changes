@@ -1,5 +1,9 @@
 Revision history for OpenERP-OOM
 
+0.42    Thu May 18, 2016
+        Odoo presents timestamps in UTC, so need to construct DateTime objects explicitly in that timezone
+         instead of a "Floating" timezone
+
 0.41    Thu May 17, 2016
         Fixed fallback order when parsing dates and timestamps read from Odoo
 
