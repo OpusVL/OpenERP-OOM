@@ -33,7 +33,6 @@ Makefile.PL
 MANIFEST
 MANIFEST.SKIP
 META.yml
-MYMETA.json
 README
 scripts/class_generate.pl
 t/00-load.t
