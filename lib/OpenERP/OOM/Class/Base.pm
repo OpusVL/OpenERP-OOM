@@ -641,16 +641,5 @@ sub execute {
 
 #-------------------------------------------------------------------------------
 
-=head1 AUTHOR
-
-Jon Allen (JJ) - L<jj@opusvl.com>
-
-=head1 COPYRIGHT and LICENSE
-
-Copyright (C) 2010 Opus Vision Limited
-
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
-
-=cut
 
 1;

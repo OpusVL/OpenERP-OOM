@@ -109,16 +109,5 @@ Objects are created and retrieved from the class:
         say $partner->name;
     }
 
-=head2 AUTHOR
-
-Jon Allen (JJ) <jj@opusvl.com>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (C) 2012 OpusVL
-
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
-
-=cut
 
 __END__

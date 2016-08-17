@@ -9,7 +9,7 @@ OpenERP::OOM - OpenERP Object to Object Mapper
 
 =cut
 
-our $VERSION = '0.42';
+our $VERSION = '0.43';
 
 =head1 SYNOPSIS
 
@@ -29,17 +29,6 @@ structures, methods, and application logic that is held outside of OpenERP.
 
 L<OpenERP::OOM::Tutorial> gives a walkthrough of how to use OpenERP::OOM.
 
-=head1 AUTHOR
-
-Jon Allen (JJ) <jj@opusvl.com>
-
-Colin Newell <colin@opusvl.com>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (C) 2011 OpusVL
-
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 

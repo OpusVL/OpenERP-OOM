@@ -24,16 +24,6 @@ to or things together.  You can also use '&' as an operator.
 
 For more details see the OpenERP Developer book.  
 
-=head2 AUTHOR
-
-Colin Newell <colin@opusvl.com>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (C) 2012 OpusVL
-
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
-
 =cut
 
 1;
