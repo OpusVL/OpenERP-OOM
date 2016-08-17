@@ -70,24 +70,16 @@ sub BUILD {
                             die "Error linking to OpenERP object " . $obj->id . " of class " . ref($obj);
                         }
                         
-                        # FIXME: At the moment the _source() method is created every time the linked
-                        # object is accessed, which is sub-optimal to say the least.
+                        # NOTE: this only links up the object from the linked object
+                        # if it has a _source attribute
                         #
-                        # However, when adding the 'unless' line it fails so don't try and
-                        # optimise it that way again JJ!
+                        # has _source => (is => 'rw');
                         
-                        # Note: the _source() method is being added to the class, not the object.
-                        # This is why there is occasional 'bleed-thorough' between different objects,
-                        # which explains why we have to add the method each time the object is accessed.
-                        
-                        #unless ($obj->{"_$name"}->can('_source')) {
-                            #warn "Adding _source method to related object $name";
-                            $obj->{"_$name"}->meta->make_mutable;
-                            $obj->{"_$name"}->meta->add_method(
-                                '_source',
-                                sub { return $obj }
-                            );
-                        #}
+                        if ($obj->{"_$name"}->can('_source')) {
+                            # set the _source attribute to point back
+                            # to the linked object.
+                            $obj->{"_$name"}->_source($obj);
+                        }
                         
                         return $obj->{"_$name"};
                     }
