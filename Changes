@@ -1,5 +1,9 @@
 Revision history for OpenERP-OOM
 
+{{ $NEXT }}
+
+0.43      2016-08-17 16:44:27+01:00 Europe/London
+
         Breaking change: Simplified setup of _source property.
         The linked objects had a _source method added that linked back to the OpenERP object.
         This now relies on the object having a Moose style read/write property named _source
