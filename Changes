@@ -1,5 +1,15 @@
 Revision history for OpenERP-OOM
 
+        Breaking change: Simplified setup of _source property.
+        The linked objects had a _source method added that linked back to the OpenERP object.
+        This now relies on the object having a Moose style read/write property named _source
+        and it will fill that in if present.  Otherwise the _source will not be setup.
+
+        This prevents problems with phantom database because the old code was setting up
+        methods on classes, so it was potentially causing issues with new Result objects
+        created outside the management of this module where they would have a _source method
+        pointing to the last OpenERP object seen.
+
 0.42    Thu May 18, 2016
         Odoo presents timestamps in UTC, so need to construct DateTime objects explicitly in that timezone
          instead of a "Floating" timezone

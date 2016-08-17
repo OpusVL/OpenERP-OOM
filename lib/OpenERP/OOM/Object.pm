@@ -309,26 +309,6 @@ sub _add_link_single {
         is  => 'ro',
     );
     
-    #$meta->add_method(
-    #    $name,
-    #    sub {
-    #        my $self = shift;
-    #
-    #        # FIXME - this is a bit broken, remembers between different objects!
-    #        # Looks like the method is being added to the whole class, not the individual object
-    #        # Maybe this code needs to go in Base.pm instead, in an "around create{...}" block
-    #        # to add these methods in when a new object is created.
-    #        state $link = $self->class->schema->link($options{class})->retrieve($options{args}, $self->{$options{key}});
-    #    
-    #        $link->meta->make_mutable;
-    #        $link->meta->add_method(
-    #            '_source',
-    #            sub { return $self }
-    #        );
-    #        
-    #        return $link;
-    #    },
-    #);
 }
 
 
@@ -343,13 +323,6 @@ sub _add_link_multiple {
         is  => 'ro',
     );
     
-    #$meta->add_method(
-    #    $name,
-    #    sub {
-    #        my $self = shift;
-    #        return $self->class->schema->link($options{class})->retrieve_list($options{args}, $self->{$options{key}});
-    #    },
-    #);
 }
 
 

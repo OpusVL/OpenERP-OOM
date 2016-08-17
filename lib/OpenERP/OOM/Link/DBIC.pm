@@ -25,8 +25,6 @@ Returns the new ID of a row it creates in a table using DBIC.
 
     my $id = $link->create({ class => 'RSName' }, $object_data);
 
-It also ensures there is no _source property on the object.
-
 =head2 retrieve
 
 This is equivalent to doing a find on a ResultSet.
