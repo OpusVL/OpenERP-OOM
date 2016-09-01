@@ -127,6 +127,7 @@ sub update {
             $self->$param($value);
         }
     }
+    my $context = $self->class->_get_context(shift);
     
     my $object;
     foreach my $attribute ($self->dirty_attributes) {
@@ -158,7 +159,7 @@ sub update {
     }
 
     $self->class->_with_retries(sub {
-        $self->class->schema->client->update($self->model, $self->id, $object);
+        $self->class->schema->client->update($self->model, $self->id, $object, $context);
     });
     $self->refresh;
     
@@ -310,12 +311,13 @@ sub real_create_related
     my $self = shift;
     my $relation_name = shift;
     my $object = shift;
+    my $context = $self->class->_get_context(shift);
 
     # find relationship class
     my $class = $self->relationship_class($relation_name);
     my $data = $class->_collapse_data_to_ids($object);
 
-    $self->class->schema->client->update($self->model, $self->id, {$relation_name => [[ 0, 0, $data ]]});
+    $self->class->schema->client->update($self->model, $self->id, {$relation_name => [[ 0, 0, $data ]]}, $context);
 
     # FIXME: need to check what happens to existing data
     # how do you add multiple objects ?
