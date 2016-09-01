@@ -11,7 +11,7 @@ requires 'DateTime';
 requires 'Try::Tiny::Retry';
 requires 'DateTime::Format::Strptime';
 
-requires 'OpenERP::XMLRPC::Client' => 0.16;
+requires 'OpenERP::XMLRPC::Client' => 0.22;
 requires 'MooseX::NotRequired';
 
 on 'test' => sub {
