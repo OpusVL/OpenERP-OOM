@@ -383,6 +383,7 @@ sub _inflate_object
 
 sub _do_strptime {
     my ($self, $string, $format) = @_;
+    return unless $string;
     my $parser = DateTime::Format::Strptime->new(pattern => $format, time_zone => 'UTC');
     return $parser->parse_datetime($string);
 }
