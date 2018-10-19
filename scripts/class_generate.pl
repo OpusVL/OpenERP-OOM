@@ -29,9 +29,9 @@ unless($db && $model && $classname)
 }
 
 my $connection_details = { dbname => $db };
-$connection_details->username => $user if $user;
-$connection_details->password => $pass if $pass;
-$connection_details->host => $host if $host;
+$connection_details->{username} = $user if $user;
+$connection_details->{password} = $pass if $pass;
+$connection_details->{host} = $host if $host;
 
 my $client = OpenERP::XMLRPC::Client->new( $connection_details );
 my $class_info = $client->model_fields($model);
