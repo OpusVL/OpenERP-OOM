@@ -356,13 +356,6 @@ sub _get_context
     my $self = shift;
     my $context = shift;
 
-    my %translation = ( lang => $self->schema->lang );
-    if($context)
-    {
-        # merge the context with our language for translation.
-        @translation{keys %$context} = values %$context;
-    }
-    $context = \%translation;
     return $context;
 }
 
