@@ -62,9 +62,8 @@ in DBIC at the moment.
 
 The key field is in OpenERP and is used for the ids of the objects to link to.
 
-The class specifies a link class that is used to follow the link.  These are in
-the namespace OpenERP::OOM::Link.  When class is set to DBIC this means it loads
-OpenERP::OOM::Link::DBIC to follow the link to the DBIC rows.
+The class is used to ask the link provider to provide a link by this name. It 
+is not necessarily treated as a class, but the default link provider does do that.
 
 Possible options for type are C<single> and C<multiple>.
 
