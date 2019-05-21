@@ -56,8 +56,6 @@ sub _build_object_class {
     return $self->object->new;
 }
 
-#-------------------------------------------------------------------------------
-
 =head2 search
 
 Searches OpenERP and returns a list of objects matching a given query.
