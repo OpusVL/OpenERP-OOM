@@ -354,7 +354,7 @@ sub _get_context
     my $self = shift;
     my $context = shift;
 
-    return $context;
+    return;
 }
 
 sub _inflate_object
