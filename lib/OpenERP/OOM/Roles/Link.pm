@@ -16,14 +16,6 @@ nested-list syntax and we would only be able to pass this exact same data to the
 user's search method to search across links. Since this is likely a lot of work
 to implement, we don't require you to do so.
 
-=head1 PROPERTIES
-
-=head2 schema
-
-This holds the L<OpenERP::OOM::Schema> object that the link is linking to.
-
-This is not done automatically; your link provider will have to set this.
-
 =head1 REQUIRED METHODS
 
 The first parameter to every method will be C<$args>.
@@ -59,10 +51,6 @@ arrayref in all situations, even if it's empty.
 The consumer will define the types that will be returned.
 
 =cut
-
-has 'schema' => (
-    is => 'ro',
-);
 
 requires qw/create retrieve retrieve_list/;
 

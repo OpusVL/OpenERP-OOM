@@ -35,8 +35,7 @@ All return values are DBIC row objects (or arrayrefs thereof).
 use 5.010;
 use Moose;
 use Try::Tiny;
-with 'OpenERP::OOM::Roles::Link',
-     'OpenERP::OOM::Roles::DefaultLink',
+with 'OpenERP::OOM::Roles::DefaultLink',
      'OpenERP::OOM::DynamicUtils';
 
 has 'dbic_schema' => (
