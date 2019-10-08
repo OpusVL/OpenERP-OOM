@@ -1,6 +1,8 @@
 Revision history for OpenERP-OOM
 
 {{ $NEXT }}
+
+0.47      2019-10-08 11:16:13+01:00 Europe/London
         - Fix bug where numeric database names were sent to Odoo as integers in XMLRPC calls, causing exceptions
         - Bring authors list into line with one another and reality
 
