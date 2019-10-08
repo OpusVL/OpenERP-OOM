@@ -11,6 +11,8 @@ requires 'DateTime';
 requires 'Try::Tiny::Retry';
 requires 'DateTime::Format::Strptime';
 requires 'Switch::Plain';
+requires 'Class::Inspector';
+requires 'namespace::autoclean';
 
 requires 'OpenERP::XMLRPC::Client' => 0.25;
 requires 'MooseX::NotRequired';
