@@ -21,7 +21,7 @@ OpenERP::OOM::Class::Base
 
  my $obj = $schema->class('Name')->create(\%args);
 
- :say $obj->id;
+ say $obj->id;
 
  $obj->name('New name');
  $obj->update;
@@ -62,6 +62,9 @@ sub BUILD {
                 $self->meta->add_method(
                     $name,
                     sub {
+                        # XXX !!!
+                        # This cannot rely on 'retrieve' because links are not
+                        # required to provide 'retrieve'
                         my $obj = shift;
                         $obj->{"_$name"} //= $obj->class->schema->link($link->{class})->retrieve($link->{args}, $obj->{$link->{key}});
 
@@ -97,9 +100,6 @@ sub BUILD {
         }
     }
 }
-
-
-#-------------------------------------------------------------------------------
 
 =head1 METHODS
 
@@ -167,8 +167,6 @@ sub update {
     return $self;
 }
 
-#-------------------------------------------------------------------------------
-
 =head2 update_single
 
 Updates OpenERP with a single property of an object.
@@ -206,8 +204,6 @@ sub update_single {
     return $self;
 }
 
-#-------------------------------------------------------------------------------
-
 =head2 refresh
 
 Reloads an object's properties from OpenERP.
@@ -229,9 +225,6 @@ sub refresh {
 
     return $self;
 }
-
-
-#-------------------------------------------------------------------------------
 
 =head2 delete
 
@@ -275,8 +268,6 @@ sub copy
     return $clone;
 }
 
-#-------------------------------------------------------------------------------
-
 =head2 print
 
 This is a debug method.
@@ -288,9 +279,6 @@ sub print {
 
     say "Print called";
 }
-
-
-#-------------------------------------------------------------------------------
 
 =head2 real_create_related
 
@@ -542,9 +530,6 @@ sub search_related {
     croak 'Unable to search_related'; # beat up the lame programmer who did this.
 }
 
-
-#-------------------------------------------------------------------------------
-
 =head2 add_related
 
 Adds a related or linked object to a one2many, many2many, or multiple relationship.
@@ -578,9 +563,6 @@ sub add_related {
         }
     }
 }
-
-
-#-------------------------------------------------------------------------------
 
 =head2 set_related
 

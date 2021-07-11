@@ -1,14 +1,23 @@
 package OpenERP::OOM::Link::DBIC;
 
-=head1 NAME
-
-OpenERP::OOM::Link::DBIC
+# ABSTRACT: Provides a basic link into a DBIC schema
 
 =head1 DESCRIPTION
 
-Class used to link OpenERP data with data in DBIC.  
+If you do not provide your own C<link_provider> when you create your
+L<OpenERP::OOM::Schema>, this class will be used by default whenever you create
+a link whose C<class> is C<DBIC>.
+
+It provides a very simple interface into a DBIC schema by assuming every class
+in your schema has a single-column primary key. This PK value is stored against
+the configured column in the OpenERP object, typically C<x_dbic_link_id>.
+
+This is where the C<key> property ends up, from
+L<OpenERP::OOM::Object/has_link>.
 
 =head1 PROPERTIES
+
+See also L<OpenERP::OOM::Roles::DefaultLink> for inherited properties.
 
 =head2 dbic_schema
 
@@ -17,40 +26,17 @@ this is normally the simplest way to access it.
 
 =head1 METHODS
 
-These methods are not normally called directly.
+See L<OpenERP::OOM::Roles::Link> for methods.
 
-=head2 create
-
-Returns the new ID of a row it creates in a table using DBIC.
-
-    my $id = $link->create({ class => 'RSName' }, $object_data);
-
-=head2 retrieve
-
-This is equivalent to doing a find on a ResultSet.
-
-    my $object = $link->retrieve({ class => 'RSName' }, $id);
-
-=head2 search
-
-This is equivalent to doing a search on a ResultSet and then returning a list
-of all the id fields.
-
-    my @ids = $link->search({ class => 'RSName' }, $search, $options);
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (C) 2011 OpusVL
-
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+All return values are DBIC row objects (or arrayrefs thereof).
 
 =cut
 
 use 5.010;
 use Moose;
 use Try::Tiny;
-extends 'OpenERP::OOM::Link';
-with 'OpenERP::OOM::DynamicUtils';
+with 'OpenERP::OOM::Roles::DefaultLink',
+     'OpenERP::OOM::DynamicUtils';
 
 has 'dbic_schema' => (
     is      => 'ro',
@@ -60,18 +46,15 @@ has 'dbic_schema' => (
 
 sub _build_dbic_schema {
     my $self = shift;
-    
+
     $self->ensure_class_loaded($self->config->{schema_class});
-    
+
     return $self->config->{schema_class}->connect(@{$self->config->{connect_info}});
 }
 
-
-#-------------------------------------------------------------------------------
-
 sub create {
     my ($self, $args, $data) = @_;
-    
+
     try {
         my $object = $self->dbic_schema->resultset($args->{class})->create($data);
         ### Created linked object with ID $object->id
@@ -81,28 +64,26 @@ sub create {
     };
 }
 
-
-#-------------------------------------------------------------------------------
-
 sub retrieve {
     my ($self, $args, $id) = @_;
-    
+
     if (my $object = $self->dbic_schema->resultset($args->{class})->find($id)) {
         return $object;
     }
+    return;
 }
 
+sub retrieve_list {
+    my ($self, $args, $ids) = @_;
 
-#-------------------------------------------------------------------------------
+    # Note we do not support a compound PK. That behaviour would require a
+    # custom class that serialises the PK into OpenERP and deserialises it for
+    # search.
+    my $RS = $self->dbic_schema->resultset($args->{class});
+    my ($pk) = $rs->result_source->primary_columns;
 
-sub search {
-    my ($self, $args, $search, $options) = @_;
-    
-    # FIXME - Foreign primary key column is hard-coded to "id"
-    return map {$_->id} $self->dbic_schema->resultset($args->{class})->search($search, $options)->all;
+    my $rs = $RS->search({ $pk => { -in => $ids } });
+    return [$rs->all];
 }
-
-
-#-------------------------------------------------------------------------------
 
 1;

@@ -56,8 +56,6 @@ sub _build_object_class {
     return $self->object->new;
 }
 
-#-------------------------------------------------------------------------------
-
 =head2 search
 
 Searches OpenERP and returns a list of objects matching a given query.
@@ -356,14 +354,7 @@ sub _get_context
     my $self = shift;
     my $context = shift;
 
-    my %translation = ( lang => $self->schema->lang );
-    if($context)
-    {
-        # merge the context with our language for translation.
-        @translation{keys %$context} = values %$context;
-    }
-    $context = \%translation;
-    return $context;
+    return;
 }
 
 sub _inflate_object

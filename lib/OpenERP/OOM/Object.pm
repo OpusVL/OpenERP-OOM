@@ -57,13 +57,19 @@ are specified in OpenERP in those terms.
 
 =head2 has_link
 
-Used to indicate links with other systems.  Typically this is to another table
-in DBIC at the moment.
+Used to indicate links with other systems.
 
 The key field is in OpenERP and is used for the ids of the objects to link to.
 
-The class is used to ask the link provider to provide a link by this name. It 
-is not necessarily treated as a class, but the default link provider does do that.
+The C<class> is used merely to select a link by the name you have defined.  When
+you construct your schema, you pass it a link provider; the link provider
+answers the request for a link of this class.
+
+The C<args> is an arbitrary property, typically a hashref. This is passed to all
+calls to the link object when the link provider returns it. A common use of this
+is to provide the C<class> key, referencing the ResultSet to link to on the
+other side of a DBIC link. The actual value here is entirely dictated by the
+C<class> of link you are using, and what your link provider uses to access it.
 
 Possible options for type are C<single> and C<multiple>.
 
