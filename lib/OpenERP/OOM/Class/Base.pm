@@ -503,8 +503,10 @@ sub _collapse_data_to_ids
         if ($rel->{type} eq 'many2one') {
             if ($object_data->{$name}) {
                 $object_data->{$rel->{key}} = $self->_id($rel, $object_data->{$name});
-                delete $object_data->{$name} if $name ne $rel->{key};
-            }            
+            }
+            if ($name ne $rel->{key}) {
+                delete $object_data->{$name};
+            }
         }
         if ($rel->{type} eq 'many2many') {
             if ($object_data->{$name}) {
