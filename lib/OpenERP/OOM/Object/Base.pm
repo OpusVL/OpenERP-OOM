@@ -158,9 +158,20 @@ sub update {
             $object->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object->{$attribute->name});
         }
     }
+    say STDERR 'XXXXXX $object after prepare_attribute_for_send : ' . pp($object);
 
     $self->class->_with_retries(sub {
-        $self->class->schema->client->update($self->model, $self->id, $object, $context);
+        $self->class->schema->client->object_execute_kw(
+            'write',
+            $self->model,
+            [ # positional args
+                $self->id,
+                $object,
+            ],
+            { # keyword args
+                context => $context,
+            },
+        );
     });
     $self->refresh;
 
