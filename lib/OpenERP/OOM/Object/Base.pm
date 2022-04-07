@@ -10,6 +10,8 @@ use Try::Tiny::Retry;
 use Time::HiRes qw/usleep/;
 use Switch::Plain;
 
+use Data::Dump qw<pp>;
+
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
 
