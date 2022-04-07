@@ -11,9 +11,6 @@ use Try::Tiny;
 use Try::Tiny::Retry;
 use Time::HiRes qw/usleep/;
 
-use Pulsar::Debug qw<log_enter_exit>;
-use Data::Dump qw<pp>;
-
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
 
@@ -123,9 +120,7 @@ to return stock levels as well as the location details for example.
 =cut
 
 sub raw_search {
-    my $LEAVE = log_enter_exit('Class::Base::raw_search');
     my $self = shift;
-    say STDERR '\@_: ' . pp(\@_);
     return $self->_raw_search(0, @_);
 }
 
@@ -166,11 +161,8 @@ sub _search_limited_fields {
 }
 
 sub _raw_search {
-    my $LEAVE = log_enter_exit('Class::Base::raw_search');
     my ($self, $ids_only, @args) = @_;
     ### Initial search args: @args
-    say STDERR '$ids_only: ' . pp($ids_only);
-    say STDERR '\@args: ' . pp(\@args);
     my @search;
     while (@args && ref $args[0] ne 'HASH') {push @search, shift @args}
     
@@ -199,7 +191,6 @@ sub _raw_search {
             }
         }
     }
-    say STDERR '\@search: ' . pp(\@search);
     my $context = $self->_get_context(shift @args);
     my $options = shift @args;
     $options = {} unless $options;
@@ -212,8 +203,6 @@ sub _raw_search {
     }
 
     my $objects = $self->schema->client->search_detail($self->object_class->model,[@search], $context, $options->{offset}, $options->{limit}, $options->{order});
-    use Data::Dump qw<pp>;
-    say STDERR 'XXX $objects = ' . pp($objects);
 
     if ($objects) {    
         foreach my $attribute ($self->object_class->meta->get_all_attributes) {
@@ -230,11 +219,8 @@ sub _raw_search {
 
 sub search
 {
-    my $LEAVE = log_enter_exit('Class::Base::search');
     my $self = shift;
-    say STDERR '\@_: ' . pp(\@_);
     my $objects = $self->raw_search(@_);
-    say STDERR '$objects: ' . pp($objects);
     if($objects) {
         return map {$self->object_class->new($_)} @$objects;
     } else {

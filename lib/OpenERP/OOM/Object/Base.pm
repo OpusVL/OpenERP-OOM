@@ -10,8 +10,6 @@ use Try::Tiny::Retry;
 use Time::HiRes qw/usleep/;
 use Switch::Plain;
 
-use Data::Dump qw<pp>;
-
 extends 'Moose::Object';
 with 'OpenERP::OOM::DynamicUtils';
 
@@ -160,7 +158,6 @@ sub update {
             $object->{$attribute->name} = $self->prepare_attribute_for_send($attribute->type_constraint, $object->{$attribute->name});
         }
     }
-    say STDERR 'XXXXXX $object after prepare_attribute_for_send : ' . pp($object);
 
     $self->class->_with_retries(sub {
         $self->class->schema->client->object_execute_kw(
