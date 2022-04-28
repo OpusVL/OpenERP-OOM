@@ -9,7 +9,7 @@ OpenERP::OOM - OpenERP Object to Object Mapper
 
 =cut
 
-our $VERSION = '0.47';
+our $VERSION = '0.49';
 
 =head1 SYNOPSIS
 
